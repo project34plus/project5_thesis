@@ -6,10 +6,13 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.choongang.global.CommonSearch;
 import org.choongang.global.rests.JSONData;
+import org.choongang.member.MemberUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Thesis", description = "논문 API")
@@ -66,7 +69,15 @@ public class ThesisController {
     @Operation(summary = "논문 목록 조회", method = "GET")
     @ApiResponse(responseCode = "200")
     @GetMapping("/list")
+    @PreAuthorize("permitAll()") //조회는 비회원도 가능
     public JSONData list(){
+        return null;
+    }
+
+    @Operation(summary = "내가 등록한 논문 목록", method = "GET")
+    @ApiResponse(responseCode = "200")
+    @GetMapping("/mylist")
+    public JSONData mylist(@ModelAttribute CommonSearch search, @AuthenticationPrincipal MemberUtil memberUtil){
         return null;
     }
 
