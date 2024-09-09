@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.choongang.global.entities.BaseMemberEntity;
+import org.choongang.thesis.constants.Category;
 
 import java.util.List;
 
@@ -18,6 +19,10 @@ public class Thesis extends BaseMemberEntity {
     @Id
     @GeneratedValue
     private Long tid;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20, nullable = false)
+    private Category category;
 
     @ManyToMany(fetch = FetchType.LAZY)
     private List<Field> id;
