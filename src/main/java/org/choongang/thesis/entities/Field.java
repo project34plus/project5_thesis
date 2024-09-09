@@ -1,9 +1,11 @@
 package org.choongang.thesis.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
+
+import java.util.List;
 
 /**
  * 학문 별 분류
@@ -19,4 +21,9 @@ public class Field {
 
     @Column(length = 60)
     private String subfield; // 중 분류명
+
+    @JsonIgnore
+    @ToString.Exclude
+    @ManyToMany(mappedBy = "fields", fetch = FetchType.LAZY)
+    private List<Thesis> theses;
 }
