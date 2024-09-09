@@ -1,6 +1,7 @@
 package org.choongang.thesis.controllers;
 
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.choongang.global.rests.JSONData;
@@ -20,6 +21,7 @@ public class ThesisAdminController {
      * PATCH - /admin : 논문 목록에서 일괄 승인 처리
      */
 
+    @Operation(summary = "논문 목록")
     @GetMapping
     public JSONData list(){
         return null;
