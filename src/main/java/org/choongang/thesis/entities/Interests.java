@@ -5,16 +5,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import lombok.Data;
-import org.choongang.global.entities.BaseEntity;
 
 @Data
 @Entity
-@IdClass(WishListId.class)
-public class WishList extends BaseEntity {
+@IdClass(InterestsId.class)
+public class Interests {
     @Id
-    private Long tid; //논문아이디
+    @Column(length = 30)
+    private String id; //학문별 분류 코드
 
     @Id
-    @Column(length=80)
-    private String email; //회원 이메일
+    @Column(length = 80)
+    private String email; // 회원 이메일 주소
 }
