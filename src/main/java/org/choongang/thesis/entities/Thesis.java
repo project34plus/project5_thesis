@@ -44,6 +44,8 @@ public class Thesis extends BaseMemberEntity {
     @Column(length=65, nullable = false)
     private String gid; // 그룹 ID
     private boolean visible; //  공개 여부
+    private boolean approval; // 승인 여부
+
     private int viewCount; // 조회수
 
     @Column(length=80)
@@ -65,4 +67,5 @@ public class Thesis extends BaseMemberEntity {
     private FileInfo fileInfo;
     @Transient
     private String _category; //문자열 분류명
+
 }
