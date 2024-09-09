@@ -6,14 +6,14 @@ import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@OpenAPIDefinition(info=@Info(title="파일 API", description = "파일업로드, 다운로드, 삭제, 조회 기능 제공"))
+@OpenAPIDefinition(info=@Info(title="논문 API", description = "논문업로드, 승인 등 관리 기능 API"))
 @Configuration
 public class SwaggerConfig {
 
     @Bean
     public GroupedOpenApi apiGroup() {
         return GroupedOpenApi.builder()
-                .group("파일 API v1")
+                .group("논문 API v1")
                 .pathsToMatch("/**")
                 .build();
     }
