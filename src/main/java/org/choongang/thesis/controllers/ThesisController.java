@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.choongang.global.CommonSearch;
 import org.choongang.global.ListData;
 import org.choongang.global.Utils;
 import org.choongang.global.exceptions.BadRequestException;
@@ -17,6 +16,7 @@ import org.choongang.thesis.services.ThesisDeleteService;
 import org.choongang.thesis.services.ThesisInfoService;
 import org.choongang.thesis.services.ThesisSaveService;
 import org.choongang.thesis.validators.ThesisValidator;
+import org.choongang.thesisAdvance.services.UserLogService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,6 +33,7 @@ public class ThesisController {
     private final ThesisInfoService thesisInfoService;
 
     private final Utils utils;
+    private final UserLogService userLogService;
 
 
     @Operation(summary = "논문 등록", method = "POST")
@@ -81,6 +82,7 @@ public class ThesisController {
     @PreAuthorize("permitAll()")
     public JSONData info(@PathVariable("tid") Long tid) {
         Thesis item = thesisInfoService.get(tid);
+        userLogService.save(tid);//조회한 논문 번호 저장
         return new JSONData(item);
     }
 
@@ -90,6 +92,7 @@ public class ThesisController {
     @PreAuthorize("permitAll()")
     public JSONData list(@ModelAttribute ThesisSearch search) {
         ListData<Thesis> data = thesisInfoService.getList(search);
+        userLogService.save(search.getSkey());//검색한 키워드 저장
         return new JSONData(data);
     }
 
