@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface FieldRepository extends JpaRepository<Field, String> , QuerydslPredicateExecutor<Field> {
 
-    List<Field> findAllById(List<String> ids);
+
 }
