@@ -26,11 +26,11 @@ public class ThesisSaveService {
     private final MemberUtil memberUtil;
 
     public void save(RequestThesis form) {
+
         String mode = Objects.requireNonNullElse(form.getMode(), "register");
         Long tid = form.getTid();
 
         Thesis thesis = null;
-
         if (mode.equals("update") && tid != null) { // 수정
             thesis = thesisRepository.findById(tid).orElseThrow(ThesisNotFoundException::new);
         } else { // 추가
@@ -42,6 +42,7 @@ public class ThesisSaveService {
                 thesis.setUserName(member.getUserName());
             }
         }
+
         /* 추가, 수정 공통 처리 S */
         thesis.setCategory(Category.valueOf(form.getCategory()));
         thesis.setPoster(form.getPoster());
@@ -66,7 +67,7 @@ public class ThesisSaveService {
             fields = fieldRepository.findAllById(ids);
         }
         thesis.setFields(fields);
-        /* 추가, 수정 공통 처리 E */
+        /* 추가, 수정 공통 처리 S */
 
         thesisRepository.saveAndFlush(thesis);
 

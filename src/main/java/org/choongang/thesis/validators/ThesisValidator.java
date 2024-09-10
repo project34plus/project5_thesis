@@ -1,12 +1,10 @@
 package org.choongang.thesis.validators;
 
-
 import org.choongang.thesis.controllers.RequestThesis;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-
 @Component
 public class ThesisValidator implements Validator {
     @Override
@@ -17,7 +15,7 @@ public class ThesisValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
 
-        if(errors.hasErrors()){
+        if (errors.hasErrors()) {
             return;
         }
 
@@ -26,7 +24,7 @@ public class ThesisValidator implements Validator {
         String mode = form.getMode();
         mode = StringUtils.hasText(mode) ? mode : "register";
         if(mode.equals("update") && (tid == null || tid < 1L)){
-            errors.rejectValue("tid","NotBlank");
+            errors.rejectValue("tid", "NotBlank");
         }
     }
 }

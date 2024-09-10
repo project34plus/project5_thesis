@@ -27,16 +27,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 public class ThesisController {
-    /**
-     * POST - /  : 논문 등록
-     * PATCH - /update/{tid} : 논문 수정
-     * DELETE - /{tid} : 논문 삭제
-     * <p>
-     * GET - /info/{tid} : 논문 한개 조회
-     * GET - /list : 전체 논문 조회(모든 논문) : 승인되고, 공개 중인 논문만 조회
-     * GET - /mylist : 회원 자신이 등록한 논문 목록
-     */
-
     private final ThesisValidator thesisValidator;
     private final ThesisSaveService thesisSaveService;
     private final ThesisDeleteService thesisDeleteService;
@@ -44,11 +34,11 @@ public class ThesisController {
 
     private final Utils utils;
 
+
     @Operation(summary = "논문 등록", method = "POST")
     @ApiResponse(responseCode = "201")
     @PostMapping
     public ResponseEntity<Void> register(@Valid @RequestBody RequestThesis form, Errors errors) {
-
         form.setMode("register");
         return save(form, errors);
     }
@@ -58,26 +48,20 @@ public class ThesisController {
     @Parameters({
             @Parameter(name = "tid", required = true, description = "경로변수, 논문 등록번호", example = "100")
     })
-
     @PatchMapping("/update/{tid}")
     public ResponseEntity<Void> update(@PathVariable("tid") Long tid, @Valid @RequestBody RequestThesis form, Errors errors) {
-
         form.setMode("update");
         form.setTid(tid);
-
         return save(form, errors);
     }
 
     public ResponseEntity<Void> save(RequestThesis form, Errors errors) {
-
         thesisValidator.validate(form, errors);
 
         if (errors.hasErrors()) {
             throw new BadRequestException(utils.getErrorMessages(errors));
         }
-
         thesisSaveService.save(form);
-
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -87,6 +71,7 @@ public class ThesisController {
     @DeleteMapping("/{tid}")
     public void delete(@PathVariable("tid") Long tid) {
         thesisDeleteService.delete(tid);
+
     }
 
     @Operation(summary = "논문 한개 조회", method = "GET")
@@ -95,9 +80,7 @@ public class ThesisController {
     @GetMapping("/info/{tid}")
     @PreAuthorize("permitAll()")
     public JSONData info(@PathVariable("tid") Long tid) {
-
         Thesis item = thesisInfoService.get(tid);
-
         return new JSONData(item);
     }
 
@@ -107,7 +90,6 @@ public class ThesisController {
     @PreAuthorize("permitAll()")
     public JSONData list(@ModelAttribute ThesisSearch search) {
         ListData<Thesis> data = thesisInfoService.getList(search);
-
         return new JSONData(data);
     }
 
@@ -115,10 +97,8 @@ public class ThesisController {
     @ApiResponse(responseCode = "200")
     @GetMapping("/mylist")
     public JSONData mylist(@ModelAttribute ThesisSearch search) {
-
         ListData<Thesis> data = thesisInfoService.getMyList(search);
 
         return new JSONData(data);
-
     }
 }

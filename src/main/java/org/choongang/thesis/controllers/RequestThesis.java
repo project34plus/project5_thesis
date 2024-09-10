@@ -14,13 +14,13 @@ public class RequestThesis {
     private Long tid;
 
     @NotBlank
-    private String mode; // register, update
+    private String mode; //register, update
 
     @NotBlank
     private String category;
 
     @NotNull
-    private List<String> fields; // 학문별 분류 코드 목록
+    private List<String> fields; //학문별 분류 코드 목록
 
     @NotBlank
     private String poster; // 편집자
@@ -39,8 +39,8 @@ public class RequestThesis {
 
     private boolean visible; //  공개 여부
 
-    private boolean approval; // 승인 여부
-    
+    private  boolean approval; //승인여부
+
     private String publisher; // 발행기관
 
     private String toc; // 목차
@@ -49,6 +49,6 @@ public class RequestThesis {
 
     private String country; // 국가
 
-    private FileInfo fileInfo; // 논문 파일
+    private FileInfo fileInfo; //논문 파일
 
 }

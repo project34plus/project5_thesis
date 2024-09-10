@@ -43,7 +43,7 @@ public class ThesisAdminController {
     @Operation(summary = "논문 한개 수정", method = "PATCH")
     @ApiResponse(responseCode = "201")
     @Parameters({
-            @Parameter(name = "tid", required = true, description = "경로변수, 논문 등록번호")
+            @Parameter(name="tid", required = true, description = "경로변수, 논문 등록번호")
     })
     @PatchMapping("/update/{tid}")
     public ResponseEntity<Void> update(@PathVariable("tid") Long tid) {
@@ -51,7 +51,7 @@ public class ThesisAdminController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @Operation(summary = "논문 목록 수정", method = "PATCH")
+    @Operation(summary="논문 목록 수정", method = "PATCH")
     @ApiResponse(responseCode = "201")
     @PatchMapping
     public ResponseEntity<Void> updateList() {

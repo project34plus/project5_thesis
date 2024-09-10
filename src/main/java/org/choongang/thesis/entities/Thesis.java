@@ -71,11 +71,10 @@ public class Thesis extends BaseMemberEntity {
 
     @Transient
     private FileInfo fileInfo;
-
     @Transient
     private String _category; //문자열 분류명
 
     @Transient
-    private Map<String, String[]> _fields; // 학문 분류, id, name, subfield
+    private Map<String, String[]> _fields;
 
 }

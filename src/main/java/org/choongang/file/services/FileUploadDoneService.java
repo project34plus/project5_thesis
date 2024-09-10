@@ -13,8 +13,8 @@ public class FileUploadDoneService {
     private final Utils utils;
 
     public void process(String gid) {
-        ApiRequest request = apiRequest.request("/done/" + gid, "file-service");
-        if (request.getStatus().is2xxSuccessful()) {
+        ApiRequest result = apiRequest.request("/done/" + gid, "file-service");
+        if (!result.getStatus().is2xxSuccessful()) {
             throw new BadRequestException(utils.getMessage("Fail.file.done"));
         }
     }

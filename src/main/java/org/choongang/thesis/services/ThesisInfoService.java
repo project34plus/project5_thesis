@@ -40,6 +40,7 @@ public class ThesisInfoService {
     private final ModelMapper modelMapper;
     private final MemberUtil memberUtil;
 
+
     public Thesis get(Long tid) {
         Thesis item = thesisRepository.findById(tid).orElseThrow(ThesisNotFoundException::new);
 
@@ -52,7 +53,6 @@ public class ThesisInfoService {
         Thesis item = get(tid);
         RequestThesis form = modelMapper.map(item, RequestThesis.class);
         Category category = item.getCategory();
-
         form.setCategory(category == null ? null : category.name());
 
         List<Field> fields = item.getFields();
@@ -66,15 +66,13 @@ public class ThesisInfoService {
 
     /**
      * 논문 목록
-     *
      * @param search
      * @return
      */
     public ListData<Thesis> getList(ThesisSearch search) {
-
         int page = Math.max(search.getPage(), 1);
         int limit = search.getLimit();
-        limit = limit < 1 ? 2 : limit;
+        limit = limit < 1 ? 20 : limit;
 
         /* 검색 처리 S */
         BooleanBuilder andBuilder = new BooleanBuilder();
@@ -85,26 +83,26 @@ public class ThesisInfoService {
         List<String> fields = search.getFields();
         List<String> email = search.getEmail();
 
-        // 작성한 회원 이메일로 조회
-        if (email != null && !email.isEmpty()) {
+        //작성한 회원 이메일로 조회
+        if(email != null && !email.isEmpty()) {
             andBuilder.and(thesis.email.in(email));
         }
+
         /* 검색 처리 E */
 
         Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(desc("createdAt")));
         Page<Thesis> data = thesisRepository.findAll(andBuilder, pageable);
 
         long total = data.getTotalElements();
-        Pagination pagination = new Pagination(page, (int) total, 10, limit, request);
+        Pagination pagination = new Pagination(page, (int)total, 10, limit, request);
 
         List<Thesis> items = data.getContent();
         items.forEach(this::addInfo);
 
         return new ListData<>(items, pagination);
     }
-
     public ListData<Thesis> getMyList(ThesisSearch search) {
-        if (!memberUtil.isLogin()) {
+        if(!memberUtil.isLogin()){
             return new ListData<>();
         }
         String email = memberUtil.getMember().getEmail();
@@ -121,11 +119,10 @@ public class ThesisInfoService {
         List<FileInfo> files = fileInfoService.getList(item.getGid());
         item.setFileInfo(files == null || files.isEmpty() ? null : files.get(0));
 
-        // 학문 분류 처리 S
+        // 학문 분류 처리
         List<Field> fields = item.getFields();
         Map<String, String[]> _fields = fields == null || fields.isEmpty() ? null : fields.stream().collect(Collectors.toMap(Field::getId, f -> new String[]{f.getName(), f.getSubfield()}));
 
         item.set_fields(_fields);
-        // 학문 분류 처리 E
     }
 }
