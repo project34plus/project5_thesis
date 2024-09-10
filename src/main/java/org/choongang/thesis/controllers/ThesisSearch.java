@@ -22,4 +22,5 @@ public class ThesisSearch extends CommonSearch {
     private String publisher; // 발행기관
     private String language; // 언어
     private String country; // 국가
+
 }

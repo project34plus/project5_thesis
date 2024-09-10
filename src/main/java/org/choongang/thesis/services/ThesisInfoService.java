@@ -1,6 +1,7 @@
 package org.choongang.thesis.services;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.EnumExpression;
 import com.querydsl.core.types.dsl.StringExpression;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -107,7 +108,7 @@ public class ThesisInfoService {
             /**
              * sopt
              *  ALL: 통합검색
-             *  CATEGORY: 카테고리
+             *  CATEGORY: 카테고리 -> 2차 가공 필요
              *  FIELDS: 분류명
              *  TITLE: 제목
              *  POSTER: 저자
@@ -115,17 +116,25 @@ public class ThesisInfoService {
              *  PUBLISHER: 발행기관
              *  LANGUAGE: 언어
              *  COUNTRY: 국가
+             *  고급 검색 기능으로 구현할 시 수정될 예정
              */
 
             skey = skey.trim();
             StringExpression expression = null;
+            EnumExpression<Category> enumExpression = null;
             if (sopt.equals("ALL")) { // 통합 검색
                 expression = thesis.title
+                        .concat(String.valueOf(thesis.category))
+                        .concat(String.valueOf(thesis.fields))
                         .concat(thesis.poster)
                         .concat(thesis.thAbstract)
                         .concat(thesis.publisher)
                         .concat(thesis.language)
                         .concat(thesis.country);
+            } else if (sopt.equals("CATEGORY")) {
+                enumExpression = thesis.category;
+            } else if (sopt.equals("FIELD")) {
+
             } else if (sopt.equals("TITLE")) {
                 expression = thesis.title;
             } else if (sopt.equals("POSTER")) {
@@ -143,18 +152,22 @@ public class ThesisInfoService {
             if (expression != null) {
                 andBuilder.and(expression.contains(skey));
             }
+
+            if (enumExpression != null) {
+                andBuilder.and(enumExpression.eq(Category.valueOf(skey)));
+            }
         }
         //논문명 검색
         if (title != null && StringUtils.hasText(title.trim())) {
-            andBuilder.and(thesis.title.eq(title));
+            andBuilder.and(thesis.title.contains(title));
         }
         //저자명 검색
         if (poster != null && StringUtils.hasText(poster.trim())) {
             andBuilder.and(thesis.poster.eq(poster));
         }
-        //초록 검색
+        //초록 검색 -> 초록은 검색해야 할 양이 많기 때문에 빼는 게 좋을 수도
         if (thAbstract != null && StringUtils.hasText(thAbstract.trim())) {
-            andBuilder.and(thesis.thAbstract.eq(thAbstract));
+            andBuilder.and(thesis.thAbstract.contains(thAbstract));
         }
         //발행기관 검색
         if (publisher != null && StringUtils.hasText(publisher.trim())) {
