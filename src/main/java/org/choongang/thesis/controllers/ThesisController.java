@@ -12,6 +12,8 @@ import org.choongang.global.Utils;
 import org.choongang.global.exceptions.BadRequestException;
 import org.choongang.global.rests.JSONData;
 import org.choongang.member.MemberUtil;
+import org.choongang.thesis.services.ThesisSaveService;
+import org.choongang.thesis.validators.ThesisValidator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,6 +25,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 public class ThesisController {
+    private final ThesisValidator thesisValidator;
+    private final ThesisSaveService thesisSaveService;;
 
     private final Utils utils;
 
@@ -48,9 +52,12 @@ public class ThesisController {
     }
 
     public ResponseEntity<Void> save(RequestThesis form, Errors errors) {
+        thesisValidator.validate(form, errors);
+
         if (errors.hasErrors()) {
             throw new BadRequestException(utils.getErrorMessages(errors));
         }
+        thesisSaveService.save(form);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

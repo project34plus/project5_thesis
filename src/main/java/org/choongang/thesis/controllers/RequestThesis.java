@@ -19,7 +19,7 @@ public class RequestThesis {
     private String category;
 
     @NotNull
-    private List<String> fields;
+    private List<String> fields; //학문별 분류 코드 목록
 
     @NotBlank
     private String poster; // 편집자
@@ -37,6 +37,8 @@ public class RequestThesis {
     private String gid = UUID.randomUUID().toString(); // 그룹 ID
 
     private boolean visible; //  공개 여부
+
+    private  boolean approval; //승인여부
 
     private String publisher; // 발행기관
 
