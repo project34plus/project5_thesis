@@ -2,7 +2,10 @@ package org.choongang.thesis.entities;
 
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -11,6 +14,9 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class UserLog {
     @Id @GeneratedValue
@@ -24,7 +30,7 @@ public class UserLog {
     @Column(length=80, nullable = false)
     private String email;
 
-    @Column(length=80, nullable = false)
+    @Column(length=80)
     private String search; // 검색어
 
     @CreatedDate
