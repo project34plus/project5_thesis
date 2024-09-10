@@ -1,5 +1,6 @@
 package org.choongang.thesis.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +11,7 @@ import org.choongang.global.entities.BaseMemberEntity;
 import org.choongang.thesis.constants.Category;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Entity
@@ -24,6 +26,7 @@ public class Thesis extends BaseMemberEntity {
     @Column(length = 20, nullable = false)
     private Category category;
 
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
     private List<Field> fields;
 
@@ -57,6 +60,9 @@ public class Thesis extends BaseMemberEntity {
     @Column(length=20)
     private String language; // 언어
 
+    @Column(length = 40)
+    private String country; // 국가
+
     @Column(length=40, nullable = false)
     private String userName; // 회원명
 
@@ -67,5 +73,8 @@ public class Thesis extends BaseMemberEntity {
     private FileInfo fileInfo;
     @Transient
     private String _category; //문자열 분류명
+
+    @Transient
+    private Map<String, String[]> _fields;
 
 }
