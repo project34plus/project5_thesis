@@ -18,5 +18,4 @@ public class Interests {
     @Column(length = 80)
     private String email; // 회원 이메일 주소
 
-
 }
