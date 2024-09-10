@@ -16,6 +16,7 @@ public class ThesisSearch extends CommonSearch {
     private LocalDate eDate; //발행일 검색 종료일
 
     private String title; //제목
+    private String poster; //저자
     private String thAbstract; // 초록
     private String reference; // 참고문헌
     private String publisher; // 발행기관
