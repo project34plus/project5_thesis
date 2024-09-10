@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @SpringBootTest
-//@ActiveProfiles("dev")
+//@ActiveProfiles("test")
 public class ApiTest {
 
     @Autowired
@@ -59,14 +59,43 @@ public class ApiTest {
         // 논문 제목 (title-group의 첫 번째 제목 사용)
         // title-group을 처리 (LinkedHashMap 형태)
         Map<String, Object> titleGroup = (Map<String, Object>) articleInfo.get("title-group");
+
         List<Map<String, Object>> articleTitles = (List<Map<String, Object>>) titleGroup.get("article-title");
+
+        // 참고문헌
+        Map<String, Object> referenceInfo = (Map<String, Object>) record.get("referenceInfo");
+        List<Map<String, Object>> references = (List<Map<String, Object>>) referenceInfo.get("reference");
+
+        // 각 레퍼런스를 문자열로 변환
+        StringBuilder referenceBuilder = new StringBuilder();
+        int i = 1;
+        for (Map<String, Object> reference : references) {
+            String pubiYear = String.valueOf(reference.get("pubi-year"));
+            String author = (String) reference.get("author");
+            String title = (String) reference.get("title");
+            String journalName = (String) reference.get("journal-name");
+            String page = (String) reference.get("page");
+            String doi = (String) reference.get("doi");
+
+            // 각 레퍼런스를 포맷팅해서 추가
+            referenceBuilder.append(String.format(i+". %s (%s), \"%s\", %s, pp. %s, DOI: %s\n",
+                    author, pubiYear, title, journalName, page, doi != null ? doi : "N/A"));
+            i++;
+        }
+        String reference = referenceBuilder.toString();
+
+        //키워드
+        Map<String, Object> keywordGroup = (Map<String, Object>) articleInfo.get("keyword-group");
+        List<String> keywordsList = (List<String>) keywordGroup.get("keyword");
+
+        String keywords = String.join(", ", keywordsList);
+
 
         // 첫 번째 제목을 추출 (original, foreign, english 중 첫 번째 original 선택)
         String title = null;
         if (articleTitles != null && !articleTitles.isEmpty()) {
             title = (String) articleTitles.get(0).get("content");
         }
-
 
         // 작성자
         String poster = (String) ((Map<String, Object>) ((Map<String, Object>) articleInfo.get("author-group")).get("author")).get("name");
@@ -77,18 +106,18 @@ public class ApiTest {
         // 발행기관 (journalInfo에서 publisher-name 추출)
         String publisher = (String) ((Map<String, Object>) record.get("journalInfo")).get("publisher-name");
 
-        // 참조 데이터 (citation-count 추출, 예: kci 값을 참조로 사용)
-        String reference = (String) ((Map<String, Object>) articleInfo.get("citation-count")).get("kci").toString();
-
         // 언어 추출
         String language = (String) articleInfo.get("article-language");
+
+        // 승인 여부
+        String verified = (String) articleInfo.get("verified");
+        boolean approval = "Y".equalsIgnoreCase(verified);
 
         // 기타 고정된 값 예시
         String country = "한국";
         Category category = Category.DOMESTIC;
         String userName = "관리자";  // 이 값을 동적으로 바꾸려면 로그인 정보를 참조
         String email = "admin@example.com";  // 이 값도 동적으로 바꾸려면 로그인 정보를 참조
-        boolean approval = true;  // 승인 여부는 일단 고정 값으로 설정
 
         // 논문 엔티티 생성
         Thesis thesis = Thesis.builder()
@@ -98,6 +127,7 @@ public class ApiTest {
                 .thAbstract(thAbstract)
                 .publisher(publisher)
                 .reference(reference)
+                .keywords(keywords)
                 .language(language)
                 .country(country)
                 .userName(userName)

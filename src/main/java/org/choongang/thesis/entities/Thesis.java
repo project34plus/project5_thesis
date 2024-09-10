@@ -57,6 +57,9 @@ public class Thesis extends BaseMemberEntity {
     @Lob
     private String toc; // 목차
 
+    @Lob
+    private String keywords; // 키워드
+
     @Column(length=20)
     private String language; // 언어
 
