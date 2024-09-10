@@ -71,6 +71,7 @@ public class Thesis extends BaseMemberEntity {
 
     @Transient
     private FileInfo fileInfo;
+
     @Transient
     private String _category; //문자열 분류명
 
