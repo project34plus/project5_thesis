@@ -43,7 +43,6 @@ public class ThesisInfoService {
 
     public Thesis get(Long tid) {
         Thesis item = thesisRepository.findById(tid).orElseThrow(ThesisNotFoundException::new);
-
         addInfo(item);
 
         return item;
@@ -65,7 +64,7 @@ public class ThesisInfoService {
     }
 
     /**
-     * 논문 목록
+     * 논문 목록 조회
      * @param search
      * @return
      */
@@ -101,6 +100,7 @@ public class ThesisInfoService {
 
         return new ListData<>(items, pagination);
     }
+
     public ListData<Thesis> getMyList(ThesisSearch search) {
         if(!memberUtil.isLogin()){
             return new ListData<>();
