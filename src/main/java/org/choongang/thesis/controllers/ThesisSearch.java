@@ -15,4 +15,6 @@ public class ThesisSearch extends CommonSearch {
 
     private LocalDate sDate;
     private LocalDate eDate;
+
+    private String period;
 }

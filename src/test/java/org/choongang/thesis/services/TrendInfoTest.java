@@ -1,5 +1,6 @@
 package org.choongang.thesis.services;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.choongang.global.ListData;
 import org.choongang.thesis.controllers.ThesisSearch;
 import org.choongang.thesis.entities.Thesis;
@@ -8,12 +9,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 
 @SpringBootTest
-@ActiveProfiles("dev")
 public class TrendInfoTest {
 
     @Autowired
@@ -22,8 +21,26 @@ public class TrendInfoTest {
     @Autowired
     ThesisRepository thesisRepository;
 
+    private HttpServletRequest request;
+
+    /*
+    @BeforeEach
+    void Data() {
+        for(int i = 0; i < 10; i++){
+            Thesis thesis = new Thesis();
+            thesis.setCategory(Category.DOMESTIC);
+            thesis.setPoster("편집자"+i);
+            thesis.setTitle("제목"+i);
+            thesis.setGid("그룹 ID"+i);
+            thesis.setUserName("userName"+i);
+            thesis.setEmail("test"+i+"@email.org");
+
+            thesisRepository.saveAndFlush(thesis);
+        }
+    }*/
+
     @Test
-    @DisplayName("기간별 조회 기능 테스트")
+    @DisplayName("기간별 논문 조회 테스트")
     void test1() {
         LocalDate eDate = LocalDate.now().plusDays(1L);
         ThesisSearch search = new ThesisSearch();
