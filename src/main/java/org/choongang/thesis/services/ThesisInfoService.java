@@ -49,7 +49,7 @@ public class ThesisInfoService {
     public Thesis get(Long tid) {
         Thesis item = thesisRepository.findById(tid).orElseThrow(ThesisNotFoundException::new);
 
-        addInfo(item);
+       addInfo(item);
 
         return item;
     }
@@ -71,7 +71,6 @@ public class ThesisInfoService {
 
     /**
      * 논문 목록
-     *
      * @param search
      * @return
      */
@@ -196,7 +195,7 @@ public class ThesisInfoService {
         }
 
         //작성한 회원 이메일로 조회
-        if (email != null && !email.isEmpty()) {
+        if(email != null && !email.isEmpty()) {
             andBuilder.and(thesis.email.in(email));
         }
 
@@ -223,7 +222,7 @@ public class ThesisInfoService {
 
     //마이리스트
     public ListData<Thesis> getMyList(ThesisSearch search) {
-        if (!memberUtil.isLogin()) {
+        if(!memberUtil.isLogin()) {
             return new ListData<>();
         }
         String email = memberUtil.getMember().getEmail();
