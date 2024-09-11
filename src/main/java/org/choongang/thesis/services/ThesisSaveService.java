@@ -69,6 +69,11 @@ public class ThesisSaveService {
 
         if (memberUtil.isAdmin()) {
             thesis.setApprovalStatus(form.getApprovalStatus()); // 관리자가 승인 상태를 변경할 수 있음
+
+            //반려하게된다면
+            if(form.getApprovalStatus() == ApprovalStatus.REJECTED){
+                thesis.setRejectedReason(form.getRejectedReason());
+            }
         }
 
         thesis.setToc(form.getToc());
@@ -89,6 +94,18 @@ public class ThesisSaveService {
         // 파일 업로드 완료 처리
         uploadDoneService.process(thesis.getGid());
     }
+    //재제출입니다아
+    @Transactional
+    public void resubmitThesis(Long thesisId, RequestThesis form) {
+        Thesis thesis = thesisRepository.findById(thesisId)
+                .orElseThrow(ThesisNotFoundException::new);
+
+
+        thesis.setApprovalStatus(ApprovalStatus.PENDING);
+        thesis.setRejectedReason(null); // 반려 사유 초기화
+        save(form);
+    }
+    //버전관리
     private void saveVersion(Thesis thesis, int major, int minor,String beforeState ,String afterState) {
         VersionLog versionLog = VersionLog.builder()
                 .thesis(thesis)
@@ -100,12 +117,7 @@ public class ThesisSaveService {
         versionLogRepository.saveAndFlush(versionLog);
     }
 
-
-
-
-
-
-
+    //논문들 선택 권한 수정
     @Transactional
     public void saveTheses(List<ThesisApprovalRequest.ThesisApprovalItem> theses) {
 
@@ -118,7 +130,7 @@ public class ThesisSaveService {
             Thesis thesis = thesisRepository.findById(item.getThesisId())
                     .orElseThrow(ThesisNotFoundException::new);
 
-            // 승인 상태를 ApprovalStatus로 설정
+
             thesis.setApprovalStatus(item.getApprovalStatus());
             thesisList.add(thesis);
         }
