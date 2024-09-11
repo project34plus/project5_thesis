@@ -2,6 +2,7 @@ package org.choongang.thesisAdvance.services;
 
 import lombok.RequiredArgsConstructor;
 import org.choongang.member.MemberUtil;
+import org.choongang.thesis.entities.Thesis;
 import org.choongang.thesis.entities.UserLog;
 import org.choongang.thesis.exceptions.ThesisNotFoundException;
 import org.choongang.thesis.repositories.ThesisRepository;
@@ -9,6 +10,9 @@ import org.choongang.thesis.repositories.UserLogRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -73,5 +77,12 @@ public class UserLogService {
             System.out.println("논문 조회 기록 실패");
         }
     }
+    public List<Thesis> getRecentlyViewedTheses(String email) {
+        List<UserLog> logs = userLogRepository.findByEmailOrderBySearchDateDesc(email);
+        List<Long> tids = logs.stream().map(log -> log.getThesis().getTid()).collect(Collectors.toList());
+        return thesisRepository.findAllById(tids);
+
+    }
+
 
 }

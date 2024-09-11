@@ -51,7 +51,16 @@ public class UserLogServiceTest {
     void test3() throws Exception {
         //테스트 시 1. 환경변수 2. 멤버 인증 확인 3. addinfo 주석
         for(int i=0;i<5;i++){
-            mockMvc.perform(get("/info/3"));
+            mockMvc.perform(get("/info/610"));
+        }
+    }
+
+    @Test
+    @DisplayName("최근 본 논문 조회 테스트")
+    @WithMockUser(username = "test01@test.org")
+    void test4() throws Exception{
+        for(int i=0;i<5;i++){
+        mockMvc.perform(get("/myView"));
         }
     }
 }

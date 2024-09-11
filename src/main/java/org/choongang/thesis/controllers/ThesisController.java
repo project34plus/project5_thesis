@@ -15,14 +15,16 @@ import org.choongang.thesis.entities.Thesis;
 import org.choongang.thesis.services.ThesisDeleteService;
 import org.choongang.thesis.services.ThesisInfoService;
 import org.choongang.thesis.services.ThesisSaveService;
-import org.choongang.thesis.services.VisitHistoryService;
 import org.choongang.thesis.validators.ThesisValidator;
 import org.choongang.thesisAdvance.services.UserLogService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "Thesis", description = "논문 API")
 @RestController
@@ -32,7 +34,6 @@ public class ThesisController {
     private final ThesisSaveService thesisSaveService;
     private final ThesisDeleteService thesisDeleteService;
     private final ThesisInfoService thesisInfoService;
-    private final VisitHistoryService visitHistoryService;
 
     private final Utils utils;
     private final UserLogService userLogService;
@@ -97,8 +98,6 @@ public class ThesisController {
 
         userLogService.save(tid);//조회한 논문 번호 저장
 
-        visitHistoryService.saveList(tid);
-
         return new JSONData(item);
 
     }
@@ -120,5 +119,14 @@ public class ThesisController {
         ListData<Thesis> data = thesisInfoService.getMyList(search);
 
         return new JSONData(data);
+    }
+
+    @Operation(summary = "최근 본 논문 목록", method = "GET")
+    @GetMapping("/myView")
+    public JSONData myView() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<Thesis> recentTheses = userLogService.getRecentlyViewedTheses(email);
+        System.out.println(recentTheses);
+        return new JSONData(recentTheses);
     }
 }
