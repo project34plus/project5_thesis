@@ -6,6 +6,7 @@ import org.choongang.thesis.entities.UserLog;
 import org.choongang.thesis.exceptions.ThesisNotFoundException;
 import org.choongang.thesis.repositories.ThesisRepository;
 import org.choongang.thesis.repositories.UserLogRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -40,8 +41,8 @@ public class UserLogService {
         try {
             ;
             UserLog userLog = UserLog.builder()
-                    .email(memberUtil.getMember().getEmail())
-//                    .email(SecurityContextHolder.getContext().getAuthentication().getName())
+//                    .email(memberUtil.getMember().getEmail())
+                    .email(SecurityContextHolder.getContext().getAuthentication().getName())
                     .search(keyword)
                     .build();
             userLogRepository.saveAndFlush(userLog);
@@ -56,14 +57,14 @@ public class UserLogService {
      * @param tid
      */
     public void save(Long tid) {
-        if (!memberUtil.isLogin() || tid == null){
-            System.out.println("user 정보 또는 게시글 번호 없음");
-            return;
-        }
+//        if (!memberUtil.isLogin() || tid == null){
+//            System.out.println("user 정보 또는 게시글 번호 없음");
+//            return;
+//        }
         try{
             UserLog userLog = UserLog.builder()
-                    .email(memberUtil.getMember().getEmail())
-//                    .email(SecurityContextHolder.getContext().getAuthentication().getName())
+//                    .email(memberUtil.getMember().getEmail())
+                    .email(SecurityContextHolder.getContext().getAuthentication().getName())
                     .thesis(thesisRepository.findById(tid).orElseThrow(ThesisNotFoundException::new))
                     .build();
             userLogRepository.saveAndFlush(userLog);

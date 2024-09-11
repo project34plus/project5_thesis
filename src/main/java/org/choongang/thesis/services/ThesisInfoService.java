@@ -82,7 +82,6 @@ public class ThesisInfoService {
     public ListData<Thesis> getList(ThesisSearch search) {
         int page = Math.max(search.getPage(), 1);
         int limit = search.getLimit();
-
         limit = limit < 1 ? 20 : limit;
 
         /* 검색 처리 S */

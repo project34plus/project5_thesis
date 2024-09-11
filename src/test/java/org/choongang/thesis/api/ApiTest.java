@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.choongang.thesis.constants.ApprovalStatus;
 import org.choongang.thesis.constants.Category;
 import org.choongang.thesis.entities.Thesis;
+import org.choongang.thesis.repositories.FieldRepository;
 import org.choongang.thesis.repositories.ThesisRepository;
 import org.json.JSONObject;
 import org.json.XML;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +29,9 @@ public class ApiTest {
 
     @Autowired
     private ThesisRepository thesisRepository;
+
+    @Autowired
+    private FieldRepository fieldRepository;
 
     @Autowired
     private ObjectMapper om;
@@ -92,6 +97,14 @@ public class ApiTest {
 
         String keywords = String.join(", ", keywordsList);
 
+        // 학문별 분류
+        String _fields = (String)articleInfo.get("article-categories");
+        String[] parts = _fields.split(" > ");
+        String name = parts[0];
+        String subtitle = parts.length > 1 ? parts[1] : "";
+
+        Map<String, String[]> _fieldsMap = new HashMap<>();
+        _fieldsMap.put(name + "("+subtitle+")", new String[]{name, subtitle});
 
         // 첫 번째 제목을 추출 (original, foreign, english 중 첫 번째 original 선택)
         String title = null;
@@ -125,6 +138,7 @@ public class ApiTest {
         Thesis thesis = Thesis.builder()
                 .title(title)
                 .category(category)
+                ._fields(_fieldsMap)
                 .poster(poster)
                 .thAbstract(thAbstract)
                 .publisher(publisher)
@@ -144,7 +158,7 @@ public class ApiTest {
 
         // 저장된 Thesis 확인을 위해 출력
         System.out.println("저장된 Thesis: " + thesis);
-
-
+        System.out.println("name" + name);
+        System.out.println("sub" + subtitle);
     }
 }
