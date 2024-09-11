@@ -1,33 +1,54 @@
 package org.choongang.thesis.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.choongang.global.rests.JSONData;
+import org.choongang.thesis.services.WishListService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Wish", description = "위시리스트 API")
-@RestController("/wish")
+@RestController
+@RequestMapping("/wish")
 @RequiredArgsConstructor
 public class WishListController {
+    private final WishListService wishListService;
 
-    //위시 리스트 조회
+    //위시 리스트 조회(보류) add로 같이
+    /*
     @Operation(summary = "위시리스트 목록 조회", method = "GET")
     @ApiResponse(responseCode = "200")
     @GetMapping
     public JSONData list() {
         return null;
     }
+    */
 
-    // 추가
-    @GetMapping("/{seq}")
-    public ResponseEntity<Void> add(@PathVariable("seq") Long seq) {
+    //위시 리스트 추가
+    @Operation(summary = "위시리스트 조회/추가", method = "GET")
+    @ApiResponse(responseCode = "200")
+    @Parameter(name = "tid", required = true, description = "경로변수, 찜한 논문 번호")
+    @GetMapping("/{tid}")
+    public ResponseEntity<Void> add(@PathVariable("tid") Long tid) {
+
+        wishListService.add(tid);
+
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    //삭제
+    @Operation(summary = "위시리스트 삭제", method = "DELETE")
+    @ApiResponse(responseCode = "200")
+    @Parameter(name = "tid", required = true, description = "경로변수, 찜한 논문 번호")
+    @DeleteMapping("/{tid}")
+    public ResponseEntity<Void> remove(@PathVariable("tid") Long tid){
+
+        wishListService.remove(tid);
+
+        return ResponseEntity.ok().build();
     }
 
 }
