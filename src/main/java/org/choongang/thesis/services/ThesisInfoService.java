@@ -44,7 +44,7 @@ public class ThesisInfoService {
     public Thesis get(Long tid) {
         Thesis item = thesisRepository.findById(tid).orElseThrow(ThesisNotFoundException::new);
 
-       addInfo(item);
+//       addInfo(item);
 
         return item;
     }
