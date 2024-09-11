@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@IdClass(VisitHistory.class)
+@IdClass(VisitHistoryId.class)
 public class VisitHistory extends BaseEntity {
     @Id
     private Long tid; //논문아이디
