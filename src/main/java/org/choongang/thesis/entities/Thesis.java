@@ -50,6 +50,8 @@ public class Thesis extends BaseMemberEntity {
 
     @Column(length=65, nullable = false)
     private String gid; // 그룹 ID
+
+
     private boolean visible; //  공개 여부
 
 
