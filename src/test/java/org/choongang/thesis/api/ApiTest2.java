@@ -6,6 +6,7 @@ import org.choongang.thesis.entities.Thesis;
 import org.choongang.thesis.repositories.ThesisRepository;
 import org.json.JSONObject;
 import org.json.XML;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,6 +32,8 @@ public class ApiTest2 {
     @Autowired
     private ObjectMapper om;
 
+    int userNum = 1;
+
     // XML을 JSON으로 변환하는 메서드
     public static String convertXmlToJson(String xml) {
         JSONObject jsonObject = XML.toJSONObject(xml);
@@ -38,12 +41,12 @@ public class ApiTest2 {
     }
 
     // article-id들을 추출하는 메서드
-    public List<String> getArticleIds() throws Exception {
-        String title = "사회과학";
+    public List<String> getArticleIds(String title) throws Exception {
+//        String title = "사회과학";
         String encodedTitle = URLEncoder.encode(title, StandardCharsets.UTF_8.toString());
 
         // API URL 정의
-        String url = "https://open.kci.go.kr/po/openapi/openApiSearch.kci?apiCode=referenceSearch&key=13281654&title=" + encodedTitle + "&displayCount=99";
+        String url = "https://open.kci.go.kr/po/openapi/openApiSearch.kci?apiCode=referenceSearch&key=13281654&title=" + encodedTitle + "&displayCount=20";
 
         // API 호출해서 XML 응답 받기
         ResponseEntity<String> response = restTemplate.getForEntity(URI.create(url), String.class);
@@ -87,36 +90,52 @@ public class ApiTest2 {
     }
 
     @Test
+    @DisplayName("논문 api 데이터")
     void saveThesesToDb() throws Exception {
-        // article-id 리스트 가져오기
-        List<String> articleIds = getArticleIds();
+        // 카테고리 리스트 정의
+        List<String> categories = List.of(
+                "공학 및 기술",
+                "의학 및 보건학",
+                "인문학",
+                "사회과학",
+                "농업 및 생명공학",
+                "경영 및 경제",
+                "예술 및 디자인"
+        );
 
-        // 각 article-id에 대해 논문 정보를 가져와서 DB에 저장
-        for (String articleId : articleIds) {
-            String url = "https://open.kci.go.kr/po/openapi/openApiSearch.kci?apiCode=articleDetail&key=13281654&id=" + articleId;
+        for (String category : categories) {
+            System.out.println("현재 카테고리:" + category);
 
-            ResponseEntity<String> response = restTemplate.getForEntity(URI.create(url), String.class); // URL에 HTTP GET 요청을 보내고 응답 받아옴
+            // article-id 리스트 가져오기 (카테고리 제목으로)
+            List<String> articleIds = getArticleIds(category);
 
-            // xml을 json으로 변환
-            String jsonResponse = convertXmlToJson(response.getBody());
+            // 각 article-id에 대해 논문 정보를 가져와서 DB에 저장
+            for (String articleId : articleIds) {
+                String url = "https://open.kci.go.kr/po/openapi/openApiSearch.kci?apiCode=articleDetail&key=13281654&id=" + articleId;
 
-            Map<String, Object> responseMap = om.readValue(jsonResponse, Map.class);
+                ResponseEntity<String> response = restTemplate.getForEntity(URI.create(url), String.class); // URL에 HTTP GET 요청을 보내고 응답 받아옴
 
-            // MetaData -> outputData -> record들에 접근
-            Map<String, Object> metaData = (Map<String, Object>) responseMap.get("MetaData");
-            Map<String, Object> outputData = (Map<String, Object>) metaData.get("outputData");
+                // xml을 json으로 변환
+                String jsonResponse = convertXmlToJson(response.getBody());
 
-            // record가 List인지 확인 후 처리
-            Object recordObj = outputData.get("record");
+                Map<String, Object> responseMap = om.readValue(jsonResponse, Map.class);
 
-            if (recordObj instanceof List) {
-                List<Map<String, Object>> records = (List<Map<String, Object>>) recordObj;
-                for (Map<String, Object> record : records) {
+                // MetaData -> outputData -> record들에 접근
+                Map<String, Object> metaData = (Map<String, Object>) responseMap.get("MetaData");
+                Map<String, Object> outputData = (Map<String, Object>) metaData.get("outputData");
+
+                // record가 List인지 확인 후 처리
+                Object recordObj = outputData.get("record");
+
+                if (recordObj instanceof List) {
+                    List<Map<String, Object>> records = (List<Map<String, Object>>) recordObj;
+                    for (Map<String, Object> record : records) {
+                        saveThesis(record, articleId);  // 논문 데이터를 DB에 저장하는 메서드 호출
+                    }
+                } else if (recordObj instanceof Map) {
+                    Map<String, Object> record = (Map<String, Object>) recordObj;
                     saveThesis(record, articleId);  // 논문 데이터를 DB에 저장하는 메서드 호출
                 }
-            } else if (recordObj instanceof Map) {
-                Map<String, Object> record = (Map<String, Object>) recordObj;
-                saveThesis(record, articleId);  // 논문 데이터를 DB에 저장하는 메서드 호출
             }
         }
     }
@@ -221,8 +240,8 @@ public class ApiTest2 {
         // 기타 고정된 값 예시
         String country = "한국";
         Category category = Category.DOMESTIC;
-        String userName = "관리자";  // 이 값을 동적으로 바꾸려면 로그인 정보를 참조
-        String email = "admin@example.com";  // 이 값도 동적으로 바꾸려면 로그인 정보를 참조
+        String userName = "사용자"+ userNum;  // 이 값을 동적으로 바꾸려면 로그인 정보를 참조
+        String email = "user"+userNum+"@example.com";  // 이 값도 동적으로 바꾸려면 로그인 정보를 참조
 
         // 논문 엔티티 생성
         Thesis thesis = Thesis.builder()
@@ -243,6 +262,7 @@ public class ApiTest2 {
 
         // 변환된 Thesis 객체를 데이터베이스에 저장
         thesisRepository.saveAndFlush(thesis);
+        userNum++;
 
         // 저장된 Thesis 확인을 위해 출력
         System.out.println("저장된 Thesis: " + thesis);
