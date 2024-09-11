@@ -34,6 +34,13 @@ public class ThesisAdminController {
     private final ThesisSaveService thesisSaveService;
     private final ThesisDeleteService thesisDeleteService;
     private final Utils utils;
+        /**
+     * GET - /admin : 논문 목록 - 승인, 미승인, 공개, 미공개 관련 없이 모두 조회 가능
+     * 	GET - /admin/info/{tid} : 논문 한개 조회
+     *
+     * 	PATCH - /admin/update/{tid} : 논문 정보 수정(+ 승인, 공개 범위)
+     * 	PATCH - /admin : 논문 목록에서 일괄 승인 처리
+     */
 
     @Operation(summary = "논문 목록", method="GET", description = "미승인, 미열람 논문도 모두 조회 가능")
     @ApiResponse(responseCode = "200")
