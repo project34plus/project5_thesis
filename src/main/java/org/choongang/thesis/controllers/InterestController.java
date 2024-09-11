@@ -27,7 +27,7 @@ public class InterestController {
 
     @Operation(summary = "회원 관심사 조회", method = "GET")
     @ApiResponse(responseCode = "200")
-    @Parameter(name = "email", required = true, description = "경로 변수, 회원 이메일", example = "test@test.org")
+    @Parameter(name = "email", required = true, description = "경로 변수, 회원 이메일", example = "test01@test.org")
     @GetMapping("/interest/{email}")
     public JSONData interestInfo(@PathVariable("email") String email) {
         List<Interests> interests = interestsRepository.findAllByEmail(email);
@@ -37,7 +37,7 @@ public class InterestController {
 
     @Operation(summary = "회원 관심사 수정", method = "PATCH")
     @ApiResponse(responseCode = "201")
-    @Parameter(name = "email", required = true, description = "경로변수, 수정하려는 회원 이메일", example = "test@test.org")
+    @Parameter(name = "email", required = true, description = "경로변수, 수정하려는 회원 이메일", example = "test01@test.org")
     @PatchMapping("/update/{email}")
     public ResponseEntity<Void> update(@PathVariable("email") String email, List<Interests> _interests) {
         interestSaveService.save(_interests, email);

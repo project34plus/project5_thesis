@@ -1,4 +1,4 @@
-package org.choongang.thesis;
+package org.choongang.thesis.services;
 
 import org.choongang.global.ListData;
 import org.choongang.member.MemberUtil;
@@ -6,7 +6,6 @@ import org.choongang.thesis.constants.Category;
 import org.choongang.thesis.controllers.ThesisSearch;
 import org.choongang.thesis.entities.Thesis;
 import org.choongang.thesis.repositories.ThesisRepository;
-import org.choongang.thesis.services.ThesisInfoService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class InfoTest {
+public class ThesisInfoServiceTest {
 
     @Autowired
     ThesisInfoService infoService;
