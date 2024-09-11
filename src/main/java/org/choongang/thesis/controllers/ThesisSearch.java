@@ -2,15 +2,16 @@ package org.choongang.thesis.controllers;
 
 import lombok.Data;
 import org.choongang.global.CommonSearch;
+import org.choongang.thesis.constants.ApprovalStatus;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Data
 public class ThesisSearch extends CommonSearch {
-    private List<String> category; //국내 or 해외
-    private List<String> fields; //학문 분류
-    private Boolean approval;
+    private List<String> category;
+    private List<String> fields;
+    private ApprovalStatus approvalStatus; //승인 상태 필드
     private List<String> email; //회원 이메일(로그인 ID)
 
     private LocalDate sDate; //발행일 검색 시작일

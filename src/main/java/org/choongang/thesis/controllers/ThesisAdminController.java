@@ -11,6 +11,7 @@ import org.choongang.global.ListData;
 import org.choongang.global.Utils;
 import org.choongang.global.exceptions.BadRequestException;
 import org.choongang.global.rests.JSONData;
+import org.choongang.thesis.constants.ApprovalStatus;
 import org.choongang.thesis.entities.Thesis;
 import org.choongang.thesis.services.ThesisDeleteService;
 import org.choongang.thesis.services.ThesisInfoService;
@@ -44,13 +45,18 @@ public class ThesisAdminController {
 
     @Operation(summary = "논문 목록", method="GET", description = "미승인, 미열람 논문도 모두 조회 가능")
     @ApiResponse(responseCode = "200")
+    @Parameters({
+            @Parameter(name = "type" , required = false, description = "경로변수, type=approval 이면 승인된 논문 unpproval이면 미승인 논문, rejected이면 반려된 논문 ")
+    })
     @GetMapping(path={"/list", "/list/{type}"})
     public JSONData list(@PathVariable(name = "type", required = false) String type, @ModelAttribute ThesisSearch search) {
         if (StringUtils.hasText(type)) {
             if (type.equals("approval")) {
-                search.setApproval(true);  // 승인된 논문만
+                search.setApprovalStatus(ApprovalStatus.APPROVED);  // 승인된 논문만
             } else if (type.equals("unapproval")) {
-                search.setApproval(false);  // 미승인된 논문만
+                search.setApprovalStatus(ApprovalStatus.PENDING);  // 미승인(대기 중) 논문만
+            } else if (type.equals("rejected")) {
+                search.setApprovalStatus(ApprovalStatus.REJECTED);  // 반려된 논문만
             }
         }
         ListData<Thesis> data = thesisInfoService.getList(search);

@@ -17,8 +17,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
-import static org.choongang.thesis.entities.QThesis.thesis;
-
 @SpringBootTest
 //@ActiveProfiles("dev")
 public class ApiTest {
@@ -81,7 +79,7 @@ public class ApiTest {
             String doi = (String) reference.get("doi");
 
             // 각 레퍼런스를 포맷팅해서 추가
-            referenceBuilder.append(String.format(i + ". %s (%s), \"%s\", %s, pp. %s, DOI: %s\n",
+            referenceBuilder.append(String.format(i+". %s (%s), \"%s\", %s, pp. %s, DOI: %s\n",
                     author, pubiYear, title, journalName, page, doi != null ? doi : "N/A"));
             i++;
         }
@@ -116,35 +114,35 @@ public class ApiTest {
         String verified = (String) articleInfo.get("verified");
         boolean approval = "Y".equalsIgnoreCase(verified);
 
-        for (int j = 1; j <= 30; j++) {
-            // 기타 고정된 값 예시
-            String country = "한국";
-            Category category = Category.DOMESTIC;
-            String userName = "user" + j;  // 이 값을 동적으로 바꾸려면 로그인 정보를 참조
-            String email = "user" + j + "@test.org";  // 이 값도 동적으로 바꾸려면 로그인 정보를 참조
-//            boolean approval = true;  // 승인 여부는 일단 고정 값으로 설정
+        // 기타 고정된 값 예시
+        String country = "한국";
+        Category category = Category.DOMESTIC;
+        String userName = "관리자";  // 이 값을 동적으로 바꾸려면 로그인 정보를 참조
+        String email = "admin@example.com";  // 이 값도 동적으로 바꾸려면 로그인 정보를 참조
 
-            // 논문 엔티티 생성
-            Thesis thesis = Thesis.builder()
-                    .title(title)
-                    .category(category)
-                    .poster(poster)
-                    .thAbstract(thAbstract)
-                    .publisher(publisher)
-                    .reference(reference)
-                    .keywords(keywords)
-                    .language(language)
-                    .country(country)
-                    .userName(userName)
-                    .email(email)
-                    .approval(approval)
-                    .gid("ART002358582")  // 논문의 article-id를 그룹 ID로 사용
-                    .build();
+        // 논문 엔티티 생성
+        Thesis thesis = Thesis.builder()
+                .title(title)
+                .category(category)
+                .poster(poster)
+                .thAbstract(thAbstract)
+                .publisher(publisher)
+                .reference(reference)
+                .keywords(keywords)
+                .language(language)
+                .country(country)
+                .userName(userName)
+                .email(email)
+                .approvalStatus(ApprovalStatus.APPROVED)
+                .gid("ART002358582")  // 논문의 article-id를 그룹 ID로 사용
+                .build();
 
-            // 변환된 Thesis 객체를 데이터베이스에 저장
-            thesisRepository.saveAndFlush(thesis);
-        }
+        // 변환된 Thesis 객체를 데이터베이스에 저장
+        thesisRepository.saveAndFlush(thesis);
+
         // 저장된 Thesis 확인을 위해 출력
         System.out.println("저장된 Thesis: " + thesis);
+
+
     }
 }
