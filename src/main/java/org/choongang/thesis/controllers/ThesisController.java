@@ -41,20 +41,24 @@ public class ThesisController {
     @PostMapping
     public ResponseEntity<Void> register(@Valid @RequestBody RequestThesis form, Errors errors) {
         form.setMode("register");
+        form.setActionType("submit");
         return save(form, errors);
     }
 
     @Operation(summary = "논문 수정", method = "PATCH")
     @ApiResponse(responseCode = "201")
     @Parameters({
-            @Parameter(name = "tid", required = true, description = "경로변수, 논문 등록번호", example = "100")
+            @Parameter(name = "tid", required = true, description = "경로변수, 논문 등록번호", example = "100"),
+            @Parameter(name = "action", required = true, description = "수정 또는 재제출",example = "submit or resubmit")
     })
-    @PatchMapping("/update/{tid}")
-    public ResponseEntity<Void> update(@PathVariable("tid") Long tid, @Valid @RequestBody RequestThesis form, Errors errors) {
+    @PatchMapping("/update/{tid}/{action}")
+    public ResponseEntity<Void> update(@PathVariable("tid") Long tid,@PathVariable("action") String action,@Valid @RequestBody RequestThesis form, Errors errors) {
+        form.setActionType(action);
         form.setMode("update");
         form.setTid(tid);
         return save(form, errors);
     }
+
 
     public ResponseEntity<Void> save(RequestThesis form, Errors errors) {
         thesisValidator.validate(form, errors);
@@ -62,7 +66,13 @@ public class ThesisController {
         if (errors.hasErrors()) {
             throw new BadRequestException(utils.getErrorMessages(errors));
         }
-        thesisSaveService.save(form);
+        if ("resubmit".equals(form.getActionType())) {
+            //재등록입니다
+            thesisSaveService.resubmitThesis(form.getTid(), form);
+        } else {
+
+            thesisSaveService.save(form);
+        }
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

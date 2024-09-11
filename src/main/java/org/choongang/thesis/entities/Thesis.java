@@ -76,6 +76,10 @@ public class Thesis extends BaseMemberEntity {
     @Column(length=80, nullable = false)
     private String email; // 이메일
 
+    @Lob
+    private String rejectedReason; // 반려 사유
+
+
     @Transient
     private FileInfo fileInfo;
 
