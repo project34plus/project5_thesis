@@ -46,7 +46,7 @@ public class ApiTest2 {
         String encodedTitle = URLEncoder.encode(title, StandardCharsets.UTF_8.toString());
 
         // API URL 정의
-        String url = "https://open.kci.go.kr/po/openapi/openApiSearch.kci?apiCode=referenceSearch&key=13281654&title=" + encodedTitle + "&displayCount=20";
+        String url = "https://open.kci.go.kr/po/openapi/openApiSearch.kci?apiCode=referenceSearch&key=13281654&title=" + encodedTitle + "&displayCount=10";
 
         // API 호출해서 XML 응답 받기
         ResponseEntity<String> response = restTemplate.getForEntity(URI.create(url), String.class);
@@ -240,8 +240,8 @@ public class ApiTest2 {
         // 기타 고정된 값 예시
         String country = "한국";
         Category category = Category.DOMESTIC;
-        String userName = "사용자"+ userNum;  // 이 값을 동적으로 바꾸려면 로그인 정보를 참조
-        String email = "user"+userNum+"@example.com";  // 이 값도 동적으로 바꾸려면 로그인 정보를 참조
+        String userName = "user" + userNum;  // 이 값을 동적으로 바꾸려면 로그인 정보를 참조
+        String email = "user" + userNum + "@test.org";  // 이 값도 동적으로 바꾸려면 로그인 정보를 참조
 
         // 논문 엔티티 생성
         Thesis thesis = Thesis.builder()
@@ -253,6 +253,7 @@ public class ApiTest2 {
                 .reference(reference)
                 .keywords(keywords)
                 .language(language)
+                .visible(true)
                 .country(country)
                 .userName(userName)
                 .email(email)

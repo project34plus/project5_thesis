@@ -1,7 +1,10 @@
 package org.choongang.thesis.services;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.EnumExpression;
+import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.core.types.dsl.StringExpression;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +32,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -170,7 +174,7 @@ public class ThesisInfoService {
         }
         //발행기관 검색
         if (publisher != null && StringUtils.hasText(publisher.trim())) {
-            andBuilder.and(thesis.publisher.eq(publisher));
+            andBuilder.and(thesis.publisher.contains(publisher));
         }
         //언어 검색
         if (language != null && StringUtils.hasText(language.trim())) {
@@ -206,7 +210,31 @@ public class ThesisInfoService {
         }
         /* 검색 처리 E */
 
+        // 정렬 처리 S, -> 목록 조회 처리 추가 필요함
+        String sort = search.getSort();
+
+        PathBuilder<Thesis> pathBuilder = new PathBuilder<>(Thesis.class, "thesis");
+        OrderSpecifier orderSpecifier = null;
+        Order order = Order.DESC;
+        if (sort != null && StringUtils.hasText(sort.trim())) {
+            //정렬항목_방향
+            String[] _sort = sort.split("_");
+            if (_sort[1].toUpperCase().equals("ASC")) {
+                order = Order.ASC;
+            }
+            orderSpecifier = new OrderSpecifier(order, pathBuilder.get(_sort[0]));
+        }
+
+        List<OrderSpecifier> orderSpecifiers = new ArrayList<>();
+        orderSpecifiers.add(thesis.title.desc());
+        if(orderSpecifier != null) {
+            orderSpecifiers.add(orderSpecifier);
+        }
+        orderSpecifiers.add(thesis.createdAt.desc());
+        //정렬 처리 E
+
         Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(desc("createdAt")));
+
         //데이터 조회
         Page<Thesis> data = thesisRepository.findAll(andBuilder, pageable);
 
@@ -229,8 +257,6 @@ public class ThesisInfoService {
         search.setEmail(List.of(email));
         return getList(search);
     }
-
-
 
     // 추가 정보 처리
     private void addInfo(Thesis item) {

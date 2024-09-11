@@ -24,4 +24,5 @@ public class ThesisSearch extends CommonSearch {
     private String language; // 언어
     private String country; // 국가
 
+    private String sort; //정렬 조건
 }

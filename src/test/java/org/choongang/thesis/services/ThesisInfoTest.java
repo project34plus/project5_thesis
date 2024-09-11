@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDate;
+
 @SpringBootTest
 public class ThesisInfoTest {
 
@@ -17,11 +19,13 @@ public class ThesisInfoTest {
     private ThesisSearch search;
 
     @Test
-    @DisplayName("논문 검색 테스트")
+    @DisplayName("논문 통합 검색 테스트(완료)")
     void listSearchTest() {
         search = new ThesisSearch();
-        search.setPoster("김정진");
-//        search.setEDate(LocalDate.now());
+        search.setPublisher("학회");
+        search.setEDate(LocalDate.now());
+//        search.setPoster("임윤진");
+
         System.out.println(search);
 
         ListData<Thesis> result = infoService.getList(search);
