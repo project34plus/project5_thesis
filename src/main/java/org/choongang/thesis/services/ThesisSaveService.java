@@ -9,7 +9,6 @@ import org.choongang.thesis.controllers.RequestThesis;
 import org.choongang.thesis.controllers.ThesisApprovalRequest;
 import org.choongang.thesis.entities.Field;
 import org.choongang.thesis.entities.Thesis;
-import org.choongang.thesis.exceptions.AdminNotFoundException;
 import org.choongang.thesis.exceptions.ThesisNotFoundException;
 import org.choongang.thesis.repositories.FieldRepository;
 import org.choongang.thesis.repositories.ThesisRepository;
@@ -81,9 +80,9 @@ public class ThesisSaveService {
     @Transactional
     public void saveTheses(List<ThesisApprovalRequest.ThesisApprovalItem> theses){
         // 관리자 권한 확인
-        if (!memberUtil.isAdmin()) {
-            throw new AdminNotFoundException();
-        }
+//        if (!memberUtil.isAdmin()) {
+//            throw new AdminNotFoundException();
+//        }
         List<Thesis> thesisList = new ArrayList<>();
 
         for (ThesisApprovalRequest.ThesisApprovalItem item : theses) {
