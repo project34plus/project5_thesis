@@ -2,6 +2,7 @@ package org.choongang.thesis.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -11,15 +12,13 @@ import org.choongang.thesis.repositories.InterestsRepository;
 import org.choongang.thesis.services.InterestSaveService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Tag(name = "Interest", description = "관심사 API")
 @RestController
+@RequestMapping("/interest")
 @RequiredArgsConstructor
 public class InterestController {
     private final InterestsRepository interestsRepository;
@@ -28,7 +27,7 @@ public class InterestController {
     @Operation(summary = "회원 관심사 조회", method = "GET")
     @ApiResponse(responseCode = "200")
     @Parameter(name = "email", required = true, description = "경로 변수, 회원 이메일", example = "test01@test.org")
-    @GetMapping("/interest/{email}")
+    @GetMapping("/{email}")
     public JSONData interestInfo(@PathVariable("email") String email) {
         List<Interests> interests = interestsRepository.findAllByEmail(email);
 
@@ -37,9 +36,13 @@ public class InterestController {
 
     @Operation(summary = "회원 관심사 수정", method = "PATCH")
     @ApiResponse(responseCode = "201")
-    @Parameter(name = "email", required = true, description = "경로변수, 수정하려는 회원 이메일", example = "test01@test.org")
+    @Parameters({
+            @Parameter(name = "email", required = true, description = "경로변수, 수정하려는 회원 이메일", example = "test01@test.org"),
+            @Parameter(name = "_interests", required = true, description = "RequestBody, Interests id를 string 값으로", example ="[SS-Law, AE-Ecology, BE-Marketing]")}
+    )
     @PatchMapping("/update/{email}")
-    public ResponseEntity<Void> update(@PathVariable("email") String email, List<Interests> _interests) {
+    public ResponseEntity<Void> update(@PathVariable("email") String email, @RequestBody List<String> _interests) {
+        // id
         interestSaveService.save(_interests, email);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
