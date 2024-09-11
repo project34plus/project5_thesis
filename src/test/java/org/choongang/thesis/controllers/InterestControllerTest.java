@@ -52,6 +52,7 @@ public class InterestControllerTest {
         //data.put("_interests", ids);
 
         String body = objectMapper.writeValueAsString(ids);
+        System.out.println("body:" + body);
         mockMvc.perform(patch("/interest/update/" + email).contentType(MediaType.APPLICATION_JSON).content(body)).andDo(print());
     }
 }
