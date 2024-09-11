@@ -1,6 +1,7 @@
 package org.choongang.thesis.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.choongang.thesis.constants.ApprovalStatus;
 import org.choongang.thesis.constants.Category;
 import org.choongang.thesis.entities.Thesis;
 import org.choongang.thesis.repositories.ThesisRepository;
@@ -235,7 +236,6 @@ public class ApiTest2 {
 
         // 승인 여부
         String verified = (String) articleInfo.get("verified");
-        boolean approval = "Y".equalsIgnoreCase(verified);
 
         // 기타 고정된 값 예시
         String country = "한국";
@@ -256,7 +256,7 @@ public class ApiTest2 {
                 .country(country)
                 .userName(userName)
                 .email(email)
-                .approval(approval)
+                .approvalStatus(ApprovalStatus.APPROVED)
                 .gid(articleId)  // 논문의 article-id를 그룹 ID로 사용
                 .build();
 
