@@ -23,5 +23,4 @@ public class Field {
     @ToString.Exclude
     @ManyToMany(mappedBy = "fields", fetch = FetchType.LAZY)
     private List<Thesis> theses;
-
 }

@@ -1,6 +1,11 @@
 package org.choongang.thesis.services;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.EnumExpression;
+import com.querydsl.core.types.dsl.PathBuilder;
+import com.querydsl.core.types.dsl.StringExpression;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.choongang.file.entities.FileInfo;
@@ -24,7 +29,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -80,9 +89,109 @@ public class ThesisInfoService {
         QThesis thesis = QThesis.thesis;
         String sopt = search.getSopt();
         String skey = search.getSkey();
-        List<String> category = search.getCategory();
-        List<String> fields = search.getFields();
-        List<String> email = search.getEmail();
+
+        LocalDate sDate = search.getSDate(); //검색 시작일
+        LocalDate eDate = search.getEDate(); //검색 종료일
+
+        List<String> category = search.getCategory(); //카테고리
+        List<String> fields = search.getFields(); //분류명
+        List<String> email = search.getEmail(); //작성한 회원 이메일
+
+        String title = search.getTitle(); //제목
+        String poster = search.getPoster(); //저자
+        String thAbstract = search.getThAbstract(); //초록
+        String publisher = search.getPublisher(); //발행기관
+        String language = search.getLanguage(); //언어
+        String country = search.getCountry(); //국가
+
+        sopt = StringUtils.hasText(sopt) ? sopt : "ALL"; // 통합 검색이 기본
+
+        sopt = sopt != null && StringUtils.hasText(sopt.trim()) ? sopt.trim() : "ALL";
+        if (skey != null && StringUtils.hasText(skey.trim())) {
+            /**
+             * sopt
+             *  ALL: 통합검색
+             *  CATEGORY: 카테고리 -> 2차 가공 필요
+             *  FIELDS: 분류명
+             *  TITLE: 제목
+             *  POSTER: 저자
+             *  THABSTRACT: 초록
+             *  PUBLISHER: 발행기관
+             *  LANGUAGE: 언어
+             *  COUNTRY: 국가
+             *  고급 검색 기능으로 구현할 시 수정될 예정
+             */
+
+            skey = skey.trim();
+            StringExpression expression = null;
+            EnumExpression<Category> enumExpression = null;
+            if (sopt.equals("ALL")) { // 통합 검색
+                expression = thesis.title
+                        .concat(String.valueOf(thesis.category))
+                        .concat(String.valueOf(thesis.fields))
+                        .concat(thesis.poster)
+                        .concat(thesis.thAbstract)
+                        .concat(thesis.publisher)
+                        .concat(thesis.language)
+                        .concat(thesis.country);
+            } else if (sopt.equals("CATEGORY")) {
+                enumExpression = thesis.category;
+            } else if (sopt.equals("FIELD")) {
+
+            } else if (sopt.equals("TITLE")) {
+                expression = thesis.title;
+            } else if (sopt.equals("POSTER")) {
+                expression = thesis.poster;
+            } else if (sopt.equals("TH-ABSTRACT")) {
+                expression = thesis.thAbstract;
+            } else if (sopt.equals("PUBLISHER")) {
+                expression = thesis.publisher;
+            } else if (sopt.equals("LANGUAGE")) {
+                expression = thesis.language;
+            } else if (sopt.equals("COUNTRY")) {
+                expression = thesis.country;
+            }
+
+            if (expression != null) {
+                andBuilder.and(expression.contains(skey));
+            }
+
+            if (enumExpression != null) {
+                andBuilder.and(enumExpression.eq(Category.valueOf(skey)));
+            }
+        }
+        //논문명 검색
+        if (title != null && StringUtils.hasText(title.trim())) {
+            andBuilder.and(thesis.title.contains(title));
+        }
+        //저자명 검색
+        if (poster != null && StringUtils.hasText(poster.trim())) {
+            andBuilder.and(thesis.poster.eq(poster));
+        }
+        //초록 검색 -> 초록은 검색해야 할 양이 많기 때문에 빼는 게 좋을 수도
+        if (thAbstract != null && StringUtils.hasText(thAbstract.trim())) {
+            andBuilder.and(thesis.thAbstract.contains(thAbstract));
+        }
+        //발행기관 검색
+        if (publisher != null && StringUtils.hasText(publisher.trim())) {
+            andBuilder.and(thesis.publisher.contains(publisher));
+        }
+        //언어 검색
+        if (language != null && StringUtils.hasText(language.trim())) {
+            andBuilder.and(thesis.language.eq(language));
+        }
+        //국가 검색
+        if (country != null && StringUtils.hasText(country.trim())) {
+            andBuilder.and(thesis.country.eq(country));
+        }
+
+        //논문 등록일 검색
+        if(sDate != null) { //검색 시작일
+            andBuilder.and(thesis.createdAt.goe(sDate.atTime(LocalTime.MIN)));
+        }
+        if(eDate != null) { //검색 종료일
+            andBuilder.and(thesis.createdAt.loe(eDate.atTime(LocalTime.MAX)));
+        }
 
         if (search.getApprovalStatus() != null) {
             ApprovalStatus approvalStatus = memberUtil.isAdmin() ? search.getApprovalStatus() : ApprovalStatus.APPROVED;
@@ -101,27 +210,53 @@ public class ThesisInfoService {
         }
         /* 검색 처리 E */
 
+        // 정렬 처리 S, -> 목록 조회 처리 추가 필요함
+        String sort = search.getSort();
+
+        PathBuilder<Thesis> pathBuilder = new PathBuilder<>(Thesis.class, "thesis");
+        OrderSpecifier orderSpecifier = null;
+        Order order = Order.DESC;
+        if (sort != null && StringUtils.hasText(sort.trim())) {
+            //정렬항목_방향
+            String[] _sort = sort.split("_");
+            if (_sort[1].toUpperCase().equals("ASC")) {
+                order = Order.ASC;
+            }
+            orderSpecifier = new OrderSpecifier(order, pathBuilder.get(_sort[0]));
+        }
+
+        List<OrderSpecifier> orderSpecifiers = new ArrayList<>();
+        orderSpecifiers.add(thesis.title.desc());
+        if(orderSpecifier != null) {
+            orderSpecifiers.add(orderSpecifier);
+        }
+        orderSpecifiers.add(thesis.createdAt.desc());
+        //정렬 처리 E
+
         Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(desc("createdAt")));
+
+        //데이터 조회
         Page<Thesis> data = thesisRepository.findAll(andBuilder, pageable);
 
         long total = data.getTotalElements();
-        Pagination pagination = new Pagination(page, (int)total, 10, limit, request);
 
-        List<Thesis> items = data.getContent();
+        Pagination pagination = new Pagination(page, (int) total, 10, limit, request);
+
+        List<Thesis> items = data.getContent(); // 개수에 맞게 조회된 데이터
         items.forEach(this::addInfo);
 
         return new ListData<>(items, pagination);
     }
+
+    //마이리스트
     public ListData<Thesis> getMyList(ThesisSearch search) {
-        if(!memberUtil.isLogin()){
+        if(!memberUtil.isLogin()) {
             return new ListData<>();
         }
         String email = memberUtil.getMember().getEmail();
         search.setEmail(List.of(email));
         return getList(search);
     }
-
-
 
     // 추가 정보 처리
     private void addInfo(Thesis item) {
