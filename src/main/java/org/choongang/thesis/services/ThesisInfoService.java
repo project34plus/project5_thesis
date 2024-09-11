@@ -190,11 +190,21 @@ public class ThesisInfoService {
             andBuilder.and(thesis.createdAt.loe(eDate.atTime(LocalTime.MAX)));
         }
 
+        if (search.getApproval() != null) {
+            boolean approval = memberUtil.isAdmin() ? search.getApproval() : true;
+            andBuilder.and(thesis.approval.eq(search.getApproval()));
+        }
+
         //작성한 회원 이메일로 조회
         if (email != null && !email.isEmpty()) {
             andBuilder.and(thesis.email.in(email));
         }
 
+        if (!memberUtil.isAdmin()) {
+            andBuilder.and(thesis.visible.eq(true))
+                    .and(thesis.approval.eq(true));
+
+        }
         /* 검색 처리 E */
 
         Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(desc("createdAt")));
@@ -220,6 +230,8 @@ public class ThesisInfoService {
         search.setEmail(List.of(email));
         return getList(search);
     }
+
+
 
     // 추가 정보 처리
     private void addInfo(Thesis item) {

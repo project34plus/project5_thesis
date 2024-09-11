@@ -10,6 +10,7 @@ import java.util.List;
 public class ThesisSearch extends CommonSearch {
     private List<String> category; //국내 or 해외
     private List<String> fields; //학문 분류
+    private Boolean approval;
     private List<String> email; //회원 이메일(로그인 ID)
 
     private LocalDate sDate; //발행일 검색 시작일
