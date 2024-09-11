@@ -8,6 +8,7 @@ import org.choongang.file.services.FileInfoService;
 import org.choongang.global.ListData;
 import org.choongang.global.Pagination;
 import org.choongang.member.MemberUtil;
+import org.choongang.thesis.constants.ApprovalStatus;
 import org.choongang.thesis.constants.Category;
 import org.choongang.thesis.controllers.RequestThesis;
 import org.choongang.thesis.controllers.ThesisSearch;
@@ -83,9 +84,9 @@ public class ThesisInfoService {
         List<String> fields = search.getFields();
         List<String> email = search.getEmail();
 
-        if (search.getApproval() != null) {
-            boolean approval = memberUtil.isAdmin() ? search.getApproval() : true;
-            andBuilder.and(thesis.approval.eq(search.getApproval()));
+        if (search.getApprovalStatus() != null) {
+            ApprovalStatus approvalStatus = memberUtil.isAdmin() ? search.getApprovalStatus() : ApprovalStatus.APPROVED;
+            andBuilder.and(thesis.approvalStatus.eq(approvalStatus)); // 승인 상태에 따른 필터링
         }
 
         //작성한 회원 이메일로 조회
@@ -95,7 +96,7 @@ public class ThesisInfoService {
 
         if (!memberUtil.isAdmin()) {
             andBuilder.and(thesis.visible.eq(true))
-                    .and(thesis.approval.eq(true));
+                    .and(thesis.approvalStatus.eq(ApprovalStatus.APPROVED));
 
         }
         /* 검색 처리 E */
