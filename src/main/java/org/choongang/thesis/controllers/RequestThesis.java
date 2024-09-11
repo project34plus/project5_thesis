@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.choongang.file.entities.FileInfo;
+import org.choongang.thesis.constants.ApprovalStatus;
 
 import java.util.List;
 import java.util.UUID;
@@ -54,5 +55,8 @@ public class RequestThesis {
     private int majorVersion; // 버전관리
 
     private int minorVersion; // 버전관리
+
+
+    private ApprovalStatus approvalStatus; //승인 상태 필드
 
 }

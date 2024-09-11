@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.choongang.file.services.FileUploadDoneService;
 import org.choongang.member.MemberUtil;
 import org.choongang.member.entities.Member;
+import org.choongang.thesis.constants.ApprovalStatus;
 import org.choongang.thesis.constants.Category;
 import org.choongang.thesis.controllers.RequestThesis;
 import org.choongang.thesis.controllers.ThesisApprovalRequest;
@@ -52,7 +53,7 @@ public class ThesisSaveService {
                 Member member = memberUtil.getMember();
                 thesis.setEmail(member.getEmail());
                 thesis.setUserName(member.getUserName());
-                thesis.setApproval(false);
+                thesis.setApprovalStatus(ApprovalStatus.PENDING);
             }
             saveVersion(thesis, 1, 0,null, form.toString());
         }
@@ -67,7 +68,7 @@ public class ThesisSaveService {
         thesis.setVisible(form.isVisible());
 
         if (memberUtil.isAdmin()) {
-            thesis.setApproval(form.isApproval()); // 승인은 관리자인 경우만 가능
+            thesis.setApprovalStatus(form.getApprovalStatus()); // 관리자가 승인 상태를 변경할 수 있음
         }
 
         thesis.setToc(form.getToc());
@@ -106,21 +107,22 @@ public class ThesisSaveService {
 
 
     @Transactional
-    public void saveTheses(List<ThesisApprovalRequest.ThesisApprovalItem> theses){
-        // 관리자 권한 확인
-//        if (!memberUtil.isAdmin()) {
-//            throw new AdminNotFoundException();
-//        }
+    public void saveTheses(List<ThesisApprovalRequest.ThesisApprovalItem> theses) {
+
+//    if (!memberUtil.isAdmin()) {
+//        throw new AdminNotFoundException();
+//    }
         List<Thesis> thesisList = new ArrayList<>();
 
         for (ThesisApprovalRequest.ThesisApprovalItem item : theses) {
             Thesis thesis = thesisRepository.findById(item.getThesisId())
                     .orElseThrow(ThesisNotFoundException::new);
-            thesis.setApproval(item.isApproved());
+
+            // 승인 상태를 ApprovalStatus로 설정
+            thesis.setApprovalStatus(item.getApprovalStatus());
             thesisList.add(thesis);
         }
+
         thesisRepository.saveAllAndFlush(thesisList);
-
-
     }
 }

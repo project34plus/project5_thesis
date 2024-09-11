@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.choongang.file.entities.FileInfo;
 import org.choongang.global.entities.BaseMemberEntity;
+import org.choongang.thesis.constants.ApprovalStatus;
 import org.choongang.thesis.constants.Category;
 
 import java.util.List;
@@ -25,6 +26,9 @@ public class Thesis extends BaseMemberEntity {
     @Enumerated(EnumType.STRING)
     @Column(length = 20, nullable = false)
     private Category category;
+
+    @Enumerated(EnumType.STRING)
+    private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
@@ -47,7 +51,7 @@ public class Thesis extends BaseMemberEntity {
     @Column(length=65, nullable = false)
     private String gid; // 그룹 ID
     private boolean visible; //  공개 여부
-    private boolean approval = false; // 승인 여부
+
 
     private int viewCount; // 조회수
 
