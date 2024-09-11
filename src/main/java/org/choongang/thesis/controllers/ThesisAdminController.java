@@ -22,6 +22,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name="ThesisAdmin", description = "논문 관리자 API")
 @RestController
 @RequestMapping("/admin")
@@ -88,16 +90,16 @@ public class ThesisAdminController {
     @Operation(summary="논문 목록 수정", method = "PATCH")
     @ApiResponse(responseCode = "201")
     @PatchMapping
-    public ResponseEntity<Void> updateList() {
-
+    public ResponseEntity<Void> updateList(@RequestBody ThesisApprovalRequest approvalRequest){
+        thesisSaveService.saveTheses(approvalRequest.getTheses());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @Operation(summary="논문 목록 삭제", method = "DELETE")
     @ApiResponse(responseCode = "201")
     @DeleteMapping
-    public ResponseEntity<Void> deleteList() {
-
+    public ResponseEntity<Void> deleteList(@RequestBody List<Long> tids) {
+        thesisDeleteService.deleteList(tids);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
