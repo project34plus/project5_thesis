@@ -1,7 +1,6 @@
-package org.choongang.thesis;
+package org.choongang.thesis.repositories;
 
 import org.choongang.thesis.entities.Field;
-import org.choongang.thesis.repositories.FieldRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @SpringBootTest
-public class FieldSaveTest {
+public class FieldRepositoryTest {
     @Autowired
     FieldRepository fieldRepository;
 
