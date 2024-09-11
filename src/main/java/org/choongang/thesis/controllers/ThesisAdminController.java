@@ -44,6 +44,9 @@ public class ThesisAdminController {
 
     @Operation(summary = "논문 목록", method="GET", description = "미승인, 미열람 논문도 모두 조회 가능")
     @ApiResponse(responseCode = "200")
+    @Parameters({
+            @Parameter(name = "type" , required = false, description = "경로변수, type=approval 이면 승인된 논문 unpproval이면 미승인 논문 ")
+    })
     @GetMapping(path={"/list", "/list/{type}"})
     public JSONData list(@PathVariable(name = "type", required = false) String type, @ModelAttribute ThesisSearch search) {
         if (StringUtils.hasText(type)) {

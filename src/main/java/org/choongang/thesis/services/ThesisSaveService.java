@@ -42,14 +42,17 @@ public class ThesisSaveService {
             //수정 전 논문상태
             String beforeState = thesis.toString();
 
+
             saveVersion(thesis, form.getMajorVersion(), form.getMinorVersion(), beforeState, form.toString());
         } else { // 추가
             thesis = new Thesis();
             thesis.setGid(form.getGid());
+
             if (memberUtil.isLogin()) {
                 Member member = memberUtil.getMember();
                 thesis.setEmail(member.getEmail());
                 thesis.setUserName(member.getUserName());
+                thesis.setApproval(false);
             }
             saveVersion(thesis, 1, 0,null, form.toString());
         }
