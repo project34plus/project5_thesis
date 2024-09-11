@@ -1,6 +1,7 @@
 package org.choongang.thesis.controllers;
 
 import lombok.Data;
+import org.choongang.thesis.constants.ApprovalStatus;
 
 import java.util.List;
 @Data
@@ -11,6 +12,6 @@ public class ThesisApprovalRequest {
     @Data
     public static class ThesisApprovalItem {
         private Long thesisId;
-        private boolean isApproved;
+        private ApprovalStatus approvalStatus;
     }
 }
