@@ -5,10 +5,21 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.choongang.global.ListData;
+import org.choongang.global.Utils;
+import org.choongang.global.exceptions.BadRequestException;
 import org.choongang.global.rests.JSONData;
+import org.choongang.thesis.entities.Thesis;
+import org.choongang.thesis.services.ThesisDeleteService;
+import org.choongang.thesis.services.ThesisInfoService;
+import org.choongang.thesis.services.ThesisSaveService;
+import org.choongang.thesis.validators.ThesisValidator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name="ThesisAdmin", description = "논문 관리자 API")
@@ -16,7 +27,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 public class ThesisAdminController {
-    /**
+    private final ThesisValidator thesisValidator;
+    private final ThesisInfoService thesisInfoService;
+    private final ThesisSaveService thesisSaveService;
+    private final ThesisDeleteService thesisDeleteService;
+    private final Utils utils;
+        /**
      * GET - /admin : 논문 목록 - 승인, 미승인, 공개, 미공개 관련 없이 모두 조회 가능
      * 	GET - /admin/info/{tid} : 논문 한개 조회
      *
@@ -26,18 +42,26 @@ public class ThesisAdminController {
 
     @Operation(summary = "논문 목록", method="GET", description = "미승인, 미열람 논문도 모두 조회 가능")
     @ApiResponse(responseCode = "200")
-    @GetMapping
-    public JSONData list() {
-        return null;
+    @GetMapping(path={"/list", "/list/{type}"})
+    public JSONData list(@PathVariable(name = "type", required = false) String type, @ModelAttribute ThesisSearch search) {
+        if (StringUtils.hasText(type)) {
+            if (type.equals("approval")) {
+                search.setApproval(true);  // 승인된 논문만
+            } else if (type.equals("unapproval")) {
+                search.setApproval(false);  // 미승인된 논문만
+            }
+        }
+        ListData<Thesis> data = thesisInfoService.getList(search);
+        return new JSONData(data);
     }
-
     @Operation(summary = "논문 한개 조회", method="GET", description = "미승인, 미열람 논문도 모두 조회 가능")
     @ApiResponse(responseCode = "200")
     @Parameter(name="tid", required = true, description = "경로변수, 논문 등록번호")
     @GetMapping("/info/{tid}")
     public JSONData info(@PathVariable("tid") Long tid) {
+        Thesis item = thesisInfoService.get(tid);
 
-        return null;
+        return new JSONData(item);
     }
 
     @Operation(summary = "논문 한개 수정", method = "PATCH")
@@ -46,9 +70,19 @@ public class ThesisAdminController {
             @Parameter(name="tid", required = true, description = "경로변수, 논문 등록번호")
     })
     @PatchMapping("/update/{tid}")
-    public ResponseEntity<Void> update(@PathVariable("tid") Long tid) {
+    public ResponseEntity<Void> update(@PathVariable("tid") Long tid, @Valid @RequestBody RequestThesis form, Errors errors) {
+        form.setMode("update");
+        form.setTid(tid);
+        return save(form, errors);
+    }
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    @Operation(summary = "논문 삭제", method = "DELETE")
+    @ApiResponse(responseCode = "200")
+    @Parameter(name = "tid", required = true, description = "경로변수, 논문 등록번호", example = "100")
+    @DeleteMapping("/{tid}")
+    public void delete(@PathVariable("tid") Long tid) {
+        thesisDeleteService.delete(tid);
+
     }
 
     @Operation(summary="논문 목록 수정", method = "PATCH")
@@ -58,4 +92,25 @@ public class ThesisAdminController {
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @Operation(summary="논문 목록 삭제", method = "DELETE")
+    @ApiResponse(responseCode = "201")
+    @DeleteMapping
+    public ResponseEntity<Void> deleteList() {
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+
+
+    public ResponseEntity<Void> save(RequestThesis form, Errors errors) {
+        thesisValidator.validate(form, errors);
+
+        if (errors.hasErrors()) {
+            throw new BadRequestException(utils.getErrorMessages(errors));
+        }
+        thesisSaveService.save(form);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
 }
