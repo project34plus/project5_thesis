@@ -107,7 +107,7 @@ public class ThesisInfoService {
         Pagination pagination = new Pagination(page, (int)total, 10, limit, request);
 
         List<Thesis> items = data.getContent();
-        //items.forEach(this::addInfo);
+        items.forEach(this::addInfo);
 
         return new ListData<>(items, pagination);
     }
