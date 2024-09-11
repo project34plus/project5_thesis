@@ -24,6 +24,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -74,6 +75,9 @@ public class ThesisInfoService {
         int limit = search.getLimit();
         limit = limit < 1 ? 20 : limit;
 
+        LocalDate sDate = search.getSDate();
+        LocalDate eDate = search.getEDate();
+
         /* 검색 처리 S */
         BooleanBuilder andBuilder = new BooleanBuilder();
         QThesis thesis = QThesis.thesis;
@@ -97,6 +101,13 @@ public class ThesisInfoService {
             andBuilder.and(thesis.visible.eq(true))
                     .and(thesis.approval.eq(true));
 
+        }
+
+        if(sDate != null) {
+            andBuilder.and(thesis.createdAt.after(sDate.atStartOfDay()));
+        }
+        if(eDate != null) {
+            andBuilder.and(thesis.createdAt.before(eDate.atStartOfDay()));
         }
         /* 검색 처리 E */
 
