@@ -47,7 +47,8 @@ public class TrendInfoService {
         List<String> fields = search.getFields();
         List<String> email = search.getEmail();
 
-        if (search.getApproval() != null) {
+        /*
+        if (search.getApprovalStatus() != null) {
             boolean approval = memberUtil.isAdmin() ? search.getApproval() : true;
             andBuilder.and(thesis.approval.eq(search.getApproval()));
         }
@@ -69,7 +70,7 @@ public class TrendInfoService {
         }
         if(eDate != null) {
             andBuilder.and(thesis.createdAt.before(eDate.atStartOfDay()));
-        }
+        }*/
 
         /* 검색 처리 E */
 
