@@ -256,6 +256,7 @@ public class ApiTest2 {
                 .country(country)
                 .userName(userName)
                 .email(email)
+                .visible(true)
                 .approvalStatus(ApprovalStatus.APPROVED)
                 .gid(articleId)  // 논문의 article-id를 그룹 ID로 사용
                 .build();
