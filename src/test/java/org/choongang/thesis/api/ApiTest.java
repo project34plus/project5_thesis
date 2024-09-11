@@ -116,7 +116,7 @@ public class ApiTest {
         String verified = (String) articleInfo.get("verified");
         boolean approval = "Y".equalsIgnoreCase(verified);
 
-        for (int j = 1; j <= 10; j++) {
+        for (int j = 1; j <= 30; j++) {
             // 기타 고정된 값 예시
             String country = "한국";
             Category category = Category.DOMESTIC;
