@@ -18,6 +18,9 @@ public class RequestThesis {
     private String mode; //register, update
 
     @NotBlank
+    private String actionType; //등록, 재등록 구분
+
+    @NotBlank
     private String category;
 
     @NotNull
@@ -55,6 +58,8 @@ public class RequestThesis {
     private int majorVersion; // 버전관리
 
     private int minorVersion; // 버전관리
+
+    private String rejectedReason;
 
 
     private ApprovalStatus approvalStatus; //승인 상태 필드
