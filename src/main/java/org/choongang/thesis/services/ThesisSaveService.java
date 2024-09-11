@@ -24,7 +24,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional // Thesis_Field 엔티티에 담기위해 추가함
 public class ThesisSaveService {
     private final ThesisRepository thesisRepository;
     private final FieldRepository fieldRepository;
