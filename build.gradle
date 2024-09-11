@@ -52,6 +52,9 @@ dependencies {
 
 	testImplementation 'org.json:json:20210307'
 
+// https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml
+	testImplementation 'org.apache.poi:poi-ooxml:5.3.0'
+
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testRuntimeOnly 'com.h2database:h2'

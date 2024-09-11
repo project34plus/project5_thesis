@@ -21,6 +21,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ThesisSaveService {
     private final ThesisRepository thesisRepository;
     private final FieldRepository fieldRepository;

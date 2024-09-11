@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalDate;
 
 @SpringBootTest
-public class ThesisInfoTest {
+public class listSearchTest {
 
     @Autowired
     private ThesisInfoService infoService;
@@ -19,7 +19,7 @@ public class ThesisInfoTest {
     private ThesisSearch search;
 
     @Test
-    @DisplayName("논문 통합 검색 테스트(완료)")
+    @DisplayName("논문 통합 검색 테스트")
     void listSearchTest() {
         search = new ThesisSearch();
         search.setPublisher("학회");
