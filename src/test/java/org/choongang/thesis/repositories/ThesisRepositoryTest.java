@@ -1,15 +1,14 @@
-package org.choongang.thesis;
+package org.choongang.thesis.repositories;
 
 import org.choongang.thesis.constants.Category;
 import org.choongang.thesis.entities.Thesis;
-import org.choongang.thesis.repositories.ThesisRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class DataTest {
+public class ThesisRepositoryTest {
     @Autowired
     ThesisRepository thesisRepository;
 
