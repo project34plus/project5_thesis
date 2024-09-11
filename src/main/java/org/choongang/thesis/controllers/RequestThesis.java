@@ -51,4 +51,8 @@ public class RequestThesis {
 
     private FileInfo fileInfo; //논문 파일
 
+    private int majorVersion; // 버전관리
+
+    private int minorVersion; // 버전관리
+
 }

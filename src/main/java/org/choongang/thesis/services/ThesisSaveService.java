@@ -9,9 +9,11 @@ import org.choongang.thesis.controllers.RequestThesis;
 import org.choongang.thesis.controllers.ThesisApprovalRequest;
 import org.choongang.thesis.entities.Field;
 import org.choongang.thesis.entities.Thesis;
+import org.choongang.thesis.entities.VersionLog;
 import org.choongang.thesis.exceptions.ThesisNotFoundException;
 import org.choongang.thesis.repositories.FieldRepository;
 import org.choongang.thesis.repositories.ThesisRepository;
+import org.choongang.thesis.repositories.VersionLogRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,7 @@ public class ThesisSaveService {
     private final ThesisRepository thesisRepository;
     private final FieldRepository fieldRepository;
     private final FileUploadDoneService uploadDoneService;
+    private final VersionLogRepository versionLogRepository;
 
     private final MemberUtil memberUtil;
 
@@ -36,6 +39,10 @@ public class ThesisSaveService {
         Thesis thesis = null;
         if (mode.equals("update") && tid != null) { // 수정
             thesis = thesisRepository.findById(tid).orElseThrow(ThesisNotFoundException::new);
+            //수정 전 논문상태
+            String beforeState = thesis.toString();
+
+            saveVersion(thesis, form.getMajorVersion(), form.getMinorVersion(), beforeState, form.toString());
         } else { // 추가
             thesis = new Thesis();
             thesis.setGid(form.getGid());
@@ -44,6 +51,7 @@ public class ThesisSaveService {
                 thesis.setEmail(member.getEmail());
                 thesis.setUserName(member.getUserName());
             }
+            saveVersion(thesis, 1, 0,null, form.toString());
         }
 
         /* 추가, 수정 공통 처리 S */
@@ -77,6 +85,23 @@ public class ThesisSaveService {
         // 파일 업로드 완료 처리
         uploadDoneService.process(thesis.getGid());
     }
+    private void saveVersion(Thesis thesis, int major, int minor,String beforeState ,String afterState) {
+        VersionLog versionLog = VersionLog.builder()
+                .thesis(thesis)
+                .major(major)
+                .minor(minor)
+                .before(beforeState)
+                .after(afterState)
+                .build();
+        versionLogRepository.saveAndFlush(versionLog);
+    }
+
+
+
+
+
+
+
     @Transactional
     public void saveTheses(List<ThesisApprovalRequest.ThesisApprovalItem> theses){
         // 관리자 권한 확인
