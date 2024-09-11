@@ -36,7 +36,7 @@ public class RecommendController {
         if(member==null){
             throw new BadRequestException("Login.Required");
         }
-        ListData<Thesis> data = recommendInfoService.getList(member,recommendSearch);
+        ListData<Thesis> data = recommendInfoService.getList(member.getEmail(),recommendSearch);
         return new JSONData(data);
     }
 
