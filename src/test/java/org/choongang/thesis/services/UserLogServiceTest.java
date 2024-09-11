@@ -48,9 +48,10 @@ public class UserLogServiceTest {
     @Test
     @DisplayName("논문 조회 저장 서비스 테스트")
     @WithMockUser(username = "test01@test.org")
-    @WithUserDetails()
     void test3() throws Exception {
-        mockMvc.perform(get("/info/1"))
-                .andDo(print());
+        //테스트 시 1. 환경변수 2. 멤버 인증 확인 3. addinfo 주석
+        for(int i=0;i<5;i++){
+            mockMvc.perform(get("/info/3"));
+        }
     }
 }
