@@ -24,4 +24,3 @@ public class Field {
     @ManyToMany(mappedBy = "fields", fetch = FetchType.LAZY)
     private List<Thesis> theses;
 }
-//자연과학
