@@ -1,6 +1,7 @@
 package org.choongang.thesis.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.choongang.thesis.constants.ApprovalStatus;
 import org.choongang.thesis.constants.Category;
 import org.choongang.thesis.entities.Thesis;
 import org.choongang.thesis.repositories.ThesisRepository;
@@ -133,6 +134,7 @@ public class ApiTest {
                 .country(country)
                 .userName(userName)
                 .email(email)
+                .visible(true)
                 .approvalStatus(ApprovalStatus.APPROVED)
                 .gid("ART002358582")  // 논문의 article-id를 그룹 ID로 사용
                 .build();
