@@ -6,13 +6,16 @@ import org.choongang.member.MemberUtil;
 import org.choongang.member.entities.Member;
 import org.choongang.thesis.constants.Category;
 import org.choongang.thesis.controllers.RequestThesis;
+import org.choongang.thesis.controllers.ThesisApprovalRequest;
 import org.choongang.thesis.entities.Field;
 import org.choongang.thesis.entities.Thesis;
 import org.choongang.thesis.exceptions.ThesisNotFoundException;
 import org.choongang.thesis.repositories.FieldRepository;
 import org.choongang.thesis.repositories.ThesisRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -73,5 +76,23 @@ public class ThesisSaveService {
 
         // 파일 업로드 완료 처리
         uploadDoneService.process(thesis.getGid());
+    }
+    @Transactional
+    public void saveTheses(List<ThesisApprovalRequest.ThesisApprovalItem> theses){
+        // 관리자 권한 확인
+//        if (!memberUtil.isAdmin()) {
+//            throw new AdminNotFoundException();
+//        }
+        List<Thesis> thesisList = new ArrayList<>();
+
+        for (ThesisApprovalRequest.ThesisApprovalItem item : theses) {
+            Thesis thesis = thesisRepository.findById(item.getThesisId())
+                    .orElseThrow(ThesisNotFoundException::new);
+            thesis.setApproval(item.isApproved());
+            thesisList.add(thesis);
+        }
+        thesisRepository.saveAllAndFlush(thesisList);
+
+
     }
 }
