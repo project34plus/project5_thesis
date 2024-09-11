@@ -8,5 +8,6 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import java.util.List;
 
 public interface InterestsRepository extends JpaRepository<Interests, InterestsId>, QuerydslPredicateExecutor<Interests> {
-    List<Interests> findByEmail(String email);
+    List<Interests> findAllByEmail(String email);
+    void deleteByEmail(String email);
 }
