@@ -39,7 +39,7 @@ public class MemberServiceTest {
         List<String> mockEmails = Arrays.asList("user1@example.com", "user2@example.com");
 
         // URL 구성
-        String url = utils.url("/api/v1/members", "member-service") + "?job=" + job;
+        String url = utils.url("/job", "member-service") + "?job=" + job;
 
         // Mock 설정
         Mockito.when(restTemplate.exchange(

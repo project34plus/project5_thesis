@@ -30,7 +30,7 @@ public class TrendController {
             @RequestParam LocalDate sDate,
             @RequestParam LocalDate eDate
             ){
-        List<String> popularKeywords = trendInfoService.getPopluarKeywords(job, sDate,eDate);
+        List<String> popularKeywords = trendInfoService.getPopluarKeywords(job, sDate, eDate);
 
         return ResponseEntity.ok(popularKeywords);
     }
