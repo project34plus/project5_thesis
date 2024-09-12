@@ -50,7 +50,7 @@ public class ThesisApprovalTest {
 
         // 2. 논문 번호 8번과 9번만 승인 상태를 REJECTED로 설정
         List<ThesisApprovalRequest.ThesisApprovalItem> thesisApprovalItems = thesisRepository.findAll().stream()
-                .filter(thesis -> thesis.getTid() == 8 || thesis.getTid() == 9) // 8번, 9번 논문만 선택
+                .filter(thesis -> thesis.getTid().equals(8L) || thesis.getTid().equals(9L)) // 8번, 9번 논문만 선택
                 .map(thesis -> {
                     ThesisApprovalRequest.ThesisApprovalItem item = new ThesisApprovalRequest.ThesisApprovalItem();
                     item.setThesisId(thesis.getTid());

@@ -21,7 +21,9 @@ import org.choongang.thesis.entities.Field;
 import org.choongang.thesis.entities.QThesis;
 import org.choongang.thesis.entities.Thesis;
 import org.choongang.thesis.exceptions.ThesisNotFoundException;
+import org.choongang.thesis.repositories.FieldRepository;
 import org.choongang.thesis.repositories.ThesisRepository;
+import org.choongang.thesisAdvance.services.UserLogService;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -46,15 +48,18 @@ import static org.springframework.data.domain.Sort.Order.desc;
 public class ThesisInfoService {
     private final ThesisRepository thesisRepository;
     private final FileInfoService fileInfoService;
+    private final WishListService wishListService;
     private final HttpServletRequest request;
     private final ModelMapper modelMapper;
     private final MemberUtil memberUtil;
+    private final FieldRepository fieldRepository;
+    private final UserLogService userLogService;
 
 
     public Thesis get(Long tid) {
         Thesis item = thesisRepository.findById(tid).orElseThrow(ThesisNotFoundException::new);
 
-       addInfo(item);
+        addInfo(item);
 
         return item;
     }
@@ -76,6 +81,7 @@ public class ThesisInfoService {
 
     /**
      * 논문 목록
+     *
      * @param search
      * @return
      */
@@ -184,12 +190,16 @@ public class ThesisInfoService {
         if (country != null && StringUtils.hasText(country.trim())) {
             andBuilder.and(thesis.country.eq(country));
         }
+        //field 검색
+        if (fields != null && !fields.isEmpty()) {
+            fieldRepository.findByIdIn(fields).forEach(i -> andBuilder.or(thesis.fields.contains(i)));
+        }
 
         //논문 등록일 검색
-        if(sDate != null) { //검색 시작일
+        if (sDate != null) { //검색 시작일
             andBuilder.and(thesis.createdAt.goe(sDate.atTime(LocalTime.MIN)));
         }
-        if(eDate != null) { //검색 종료일
+        if (eDate != null) { //검색 종료일
             andBuilder.and(thesis.createdAt.loe(eDate.atTime(LocalTime.MAX)));
         }
 
@@ -199,7 +209,7 @@ public class ThesisInfoService {
         }
 
         //작성한 회원 이메일로 조회
-        if(email != null && !email.isEmpty()) {
+        if (email != null && !email.isEmpty()) {
             andBuilder.and(thesis.email.in(email));
         }
 
@@ -227,7 +237,7 @@ public class ThesisInfoService {
 
         List<OrderSpecifier> orderSpecifiers = new ArrayList<>();
         orderSpecifiers.add(thesis.title.desc());
-        if(orderSpecifier != null) {
+        if (orderSpecifier != null) {
             orderSpecifiers.add(orderSpecifier);
         }
         orderSpecifiers.add(thesis.createdAt.desc());
@@ -244,18 +254,50 @@ public class ThesisInfoService {
 
         List<Thesis> items = data.getContent(); // 개수에 맞게 조회된 데이터
         items.forEach(this::addInfo);
-
+        if(StringUtils.hasText(skey)){
+            userLogService.save(skey);//검색한 키워드 저장
+        }
         return new ListData<>(items, pagination);
     }
 
     //마이리스트
     public ListData<Thesis> getMyList(ThesisSearch search) {
-        if(!memberUtil.isLogin()) {
+        if (!memberUtil.isLogin()) {
             return new ListData<>();
         }
         String email = memberUtil.getMember().getEmail();
         search.setEmail(List.of(email));
         return getList(search);
+    }
+
+    /**
+     * 내가 찜한 논문 목록
+     * @param search
+     * @return
+     */
+    public ListData<Thesis> getWishList(ThesisSearch search){
+        int page = Math.max(search.getPage(), 1);
+        int limit = search.getLimit();
+        limit = limit < 1 ? 10 : limit;
+
+        List<Long> tids = wishListService.getList(); //찜한 논문 목록 tid 가져오기
+        if(tids == null || tids.isEmpty()){
+            return new ListData<>();
+        }
+
+        QThesis thesis = QThesis.thesis;
+        BooleanBuilder andBuilder = new BooleanBuilder();
+        andBuilder.and(thesis.tid.in(tids)); // 찜한 논문의 tid에 해당하는 논문만 조회
+
+        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(desc("createdAt")));
+
+        Page<Thesis> data = thesisRepository.findAll(andBuilder, pageable);
+
+        Pagination pagination = new Pagination(page, (int) data.getTotalElements(), 10, limit, request);
+
+        List<Thesis> items = data.getContent();
+
+        return new ListData<>(items, pagination); // 결과 반환
     }
 
     // 추가 정보 처리

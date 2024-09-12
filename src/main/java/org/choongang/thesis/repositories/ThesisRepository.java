@@ -7,4 +7,5 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 public interface ThesisRepository extends JpaRepository<Thesis, Long> , QuerydslPredicateExecutor<Thesis> {
+
 }
