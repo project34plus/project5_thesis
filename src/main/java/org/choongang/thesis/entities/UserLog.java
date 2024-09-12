@@ -12,6 +12,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Entity
@@ -34,7 +35,7 @@ public class UserLog {
 
     @CreatedBy
     @Column(length=10, nullable = false)
-    private String job; // 검색시 직업도 추가!
+    private List<String> job; // 검색시 직업도 추가!
 
     @Column(length=80)
     private String search; // 검색어
