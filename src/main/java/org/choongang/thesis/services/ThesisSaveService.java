@@ -95,7 +95,7 @@ public class ThesisSaveService {
         // 파일 업로드 완료 처리
         uploadDoneService.process(thesis.getGid());
     }
-    //재제출입니다아
+    //재제출입니다
     @Transactional
     public void resubmitThesis(Long thesisId, RequestThesis form) {
         Thesis thesis = thesisRepository.findById(thesisId)

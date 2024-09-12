@@ -126,7 +126,7 @@ public class ThesisController {
     public JSONData myView() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         List<Thesis> recentTheses = userLogService.getRecentlyViewedTheses(email);
-        System.out.println(recentTheses);
+        //System.out.println(recentTheses);
         return new JSONData(recentTheses);
     }
 }
