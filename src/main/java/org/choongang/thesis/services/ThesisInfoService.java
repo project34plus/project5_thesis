@@ -21,6 +21,7 @@ import org.choongang.thesis.entities.Field;
 import org.choongang.thesis.entities.QThesis;
 import org.choongang.thesis.entities.Thesis;
 import org.choongang.thesis.exceptions.ThesisNotFoundException;
+import org.choongang.thesis.repositories.FieldRepository;
 import org.choongang.thesis.repositories.ThesisRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -49,6 +50,7 @@ public class ThesisInfoService {
     private final HttpServletRequest request;
     private final ModelMapper modelMapper;
     private final MemberUtil memberUtil;
+    private final FieldRepository fieldRepository;
 
 
     public Thesis get(Long tid) {
@@ -183,6 +185,10 @@ public class ThesisInfoService {
         //국가 검색
         if (country != null && StringUtils.hasText(country.trim())) {
             andBuilder.and(thesis.country.eq(country));
+        }
+        //field 검색
+        if(!fields.isEmpty()){
+            fieldRepository.findByIdIn(fields).forEach(i->andBuilder.or(thesis.fields.contains(i)));
         }
 
         //논문 등록일 검색

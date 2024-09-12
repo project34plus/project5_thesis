@@ -70,8 +70,8 @@ public class ThesisController {
             //재등록입니다
             thesisSaveService.resubmitThesis(form.getTid(), form);
         } else {
-
             thesisSaveService.save(form);
+
         }
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
