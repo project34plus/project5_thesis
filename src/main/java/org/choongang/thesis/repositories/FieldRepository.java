@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface FieldRepository extends JpaRepository<Field, String> , QuerydslPredicateExecutor<Field> {
     List<Field> findByIdIn(List<String> ids);
+
+    Field findBySubfield(String subfield); //테스트용
 }
