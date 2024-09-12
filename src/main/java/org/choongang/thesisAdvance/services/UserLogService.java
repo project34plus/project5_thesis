@@ -9,7 +9,6 @@ import org.choongang.thesis.repositories.ThesisRepository;
 import org.choongang.thesis.repositories.UserLogRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,9 +38,9 @@ public class UserLogService {
      * @param keyword
      */
     public void save(String keyword) {
-        if (!memberUtil.isLogin() || !StringUtils.hasText(keyword.trim())) {
+/*        if (!memberUtil.isLogin() || !StringUtils.hasText(keyword.trim())) {
             return;
-        }
+        }*/
         try {
             ;
             UserLog userLog = UserLog.builder()
