@@ -20,8 +20,11 @@ import org.choongang.thesisAdvance.services.UserLogService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "Thesis", description = "논문 API")
 @RestController
@@ -92,8 +95,11 @@ public class ThesisController {
     @PreAuthorize("permitAll()")
     public JSONData info(@PathVariable("tid") Long tid) {
         Thesis item = thesisInfoService.get(tid);
+
         userLogService.save(tid);//조회한 논문 번호 저장
+
         return new JSONData(item);
+
     }
 
     @Operation(summary = "논문 목록 조회", method = "GET")
@@ -113,5 +119,14 @@ public class ThesisController {
         ListData<Thesis> data = thesisInfoService.getMyList(search);
 
         return new JSONData(data);
+    }
+
+    @Operation(summary = "최근 본 논문 목록", method = "GET")
+    @GetMapping("/myView")
+    public JSONData myView() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<Thesis> recentTheses = userLogService.getRecentlyViewedTheses(email);
+        //System.out.println(recentTheses);
+        return new JSONData(recentTheses);
     }
 }

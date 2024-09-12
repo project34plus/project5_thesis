@@ -43,12 +43,13 @@ public class WishListService {
         WishListId wishListId = new WishListId(tid,memberUtil.getMember().getEmail());
         wishListRepository.deleteById(wishListId);
         wishListRepository.flush();
+        System.out.println("위시리스트 논문 삭제");
     }
 
     public List<Long> getList(){
         BooleanBuilder builder = new BooleanBuilder();
         QWishList wishList = QWishList.wishList;
-        builder.and(wishList.email.eq(memberUtil.getMember().getEmail()));
+        builder.and(wishList.email.eq("testuser1@email.com"));
 
         List<Long> items = ((List<WishList>)wishListRepository.findAll(builder, Sort.by(desc("createdAt")))).stream().map(WishList::getTid).toList();
 

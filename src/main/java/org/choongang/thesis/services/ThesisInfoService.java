@@ -48,6 +48,7 @@ import static org.springframework.data.domain.Sort.Order.desc;
 public class ThesisInfoService {
     private final ThesisRepository thesisRepository;
     private final FileInfoService fileInfoService;
+    private final WishListService wishListService;
     private final HttpServletRequest request;
     private final ModelMapper modelMapper;
     private final MemberUtil memberUtil;
@@ -267,6 +268,36 @@ public class ThesisInfoService {
         String email = memberUtil.getMember().getEmail();
         search.setEmail(List.of(email));
         return getList(search);
+    }
+
+    /**
+     * 내가 찜한 논문 목록
+     * @param search
+     * @return
+     */
+    public ListData<Thesis> getWishList(ThesisSearch search){
+        int page = Math.max(search.getPage(), 1);
+        int limit = search.getLimit();
+        limit = limit < 1 ? 10 : limit;
+
+        List<Long> tids = wishListService.getList(); //찜한 논문 목록 tid 가져오기
+        if(tids == null || tids.isEmpty()){
+            return new ListData<>();
+        }
+
+        QThesis thesis = QThesis.thesis;
+        BooleanBuilder andBuilder = new BooleanBuilder();
+        andBuilder.and(thesis.tid.in(tids)); // 찜한 논문의 tid에 해당하는 논문만 조회
+
+        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(desc("createdAt")));
+
+        Page<Thesis> data = thesisRepository.findAll(andBuilder, pageable);
+
+        Pagination pagination = new Pagination(page, (int) data.getTotalElements(), 10, limit, request);
+
+        List<Thesis> items = data.getContent();
+
+        return new ListData<>(items, pagination); // 결과 반환
     }
 
     // 추가 정보 처리
