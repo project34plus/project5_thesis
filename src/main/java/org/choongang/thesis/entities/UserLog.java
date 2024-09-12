@@ -1,6 +1,7 @@
 package org.choongang.thesis.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,11 +25,16 @@ public class UserLog {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="tid")
+    @JsonIgnore
     private Thesis thesis;
 
     @CreatedBy
     @Column(length=80, nullable = false)
     private String email;
+
+    @CreatedBy
+    @Column(length=10, nullable = false)
+    private String job; // 검색시 직업도 추가!
 
     @Column(length=80)
     private String search; // 검색어

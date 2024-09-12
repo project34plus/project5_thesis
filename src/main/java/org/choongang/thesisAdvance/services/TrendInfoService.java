@@ -1,88 +1,59 @@
 package org.choongang.thesisAdvance.services;
 
-import com.querydsl.core.BooleanBuilder;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.choongang.file.services.FileInfoService;
-import org.choongang.global.Pagination;
-import org.choongang.member.MemberUtil;
-import org.choongang.thesis.controllers.ThesisSearch;
-import org.choongang.thesis.entities.QThesis;
-import org.choongang.thesis.entities.Thesis;
-import org.choongang.thesis.repositories.ThesisRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.choongang.thesis.entities.UserLog;
+import org.choongang.thesis.repositories.UserLogRepository;
+import org.choongang.thesisAdvance.controllers.TrendSearch;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-
-import static org.springframework.data.domain.Sort.Order.desc;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class TrendInfoService {
-    private final ThesisRepository thesisRepository;
-    private final FileInfoService fileInfoService;
-    private final HttpServletRequest request;
-    private final MemberUtil memberUtil;
+    private final UserLogRepository userLogRepository;
+    private final MemberService memberService;
 
-    public List<Thesis> getListByDateRange(ThesisSearch search) {
-        int page = Math.max(search.getPage(), 1);
-        int limit = search.getLimit();
-        limit = limit < 1 ? 20 : limit;
+    public List<String> getPopluarKeywords(String email, LocalDate sDate, LocalDate eDate) {
+        // 1. 직업 조회
+        List<String> job = memberService.getJobByEmails(email);
 
-        LocalDate sDate = search.getSDate();
-        LocalDate eDate = search.getEDate();
+        // 2. 조회한 직업과 기간을 기준으로 검색 기록 조회
+        TrendSearch trendSearch = new TrendSearch();
+        List<UserLog> userLogs = userLogRepository.findByJobInSearchDateBetween(job, sDate.atStartOfDay(), eDate.atTime(23, 59, 59));
 
-        /* 검색 처리 S */
-        QThesis thesis = QThesis.thesis;
-        BooleanBuilder andBuilder = new BooleanBuilder();
+        // 3. 검색어 빈도 계산
+        Map<String, Long> keywordFrequency = userLogs.stream()
+                .collect(Collectors.groupingBy(UserLog::getSearch, Collectors.counting()));
 
-        String sopt = search.getSopt();
-        String skey = search.getSkey();
-        List<String> category = search.getCategory();
-        List<String> fields = search.getFields();
-        List<String> email = search.getEmail();
-
-        /*
-        if (search.getApprovalStatus() != null) {
-            boolean approval = memberUtil.isAdmin() ? search.getApproval() : true;
-            andBuilder.and(thesis.approval.eq(search.getApproval()));
-        }
-
-        //작성한 회원 이메일로 조회
-        if(email != null && !email.isEmpty()) {
-            andBuilder.and(thesis.email.in(email));
-        }
-
-        if (!memberUtil.isAdmin()) {
-            andBuilder.and(thesis.visible.eq(true))
-                    .and(thesis.approval.eq(true));
-
-        }
-
-        // 기간 검색
-        if(sDate != null) {
-            andBuilder.and(thesis.createdAt.after(sDate.atStartOfDay()));
-        }
-        if(eDate != null) {
-            andBuilder.and(thesis.createdAt.before(eDate.atStartOfDay()));
-        }*/
-
-        /* 검색 처리 E */
-
-        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(desc("createdAt")));
-        Page<Thesis> data = thesisRepository.findAll(andBuilder, pageable);
-
-        long total = data.getTotalElements();
-        Pagination pagination = new Pagination(page, (int)total, 10, limit, request);
-
-        List<Thesis> items = data.getContent();
-
-        return null;
-                //new ListData<>(items, pagination);
+        // 4. 빈도수 기준으로 검색어 정렬
+        return keywordFrequency.entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
     }
+
+    /* 이메일로 조회
+    public List<String> getPopluarKeywords(String job, LocalDate sDate, LocalDate eDate) {
+        // 1. RestTemplate을 통해 직업군에 속한 회원 이메일을 외부 서비스에서 조회
+        List<String> emails = memberService.getEmailsByJob(job);
+
+        // 2. 조회한 이메일과 기간을 기준으로 검색 기록 조회
+        TrendSearch trendSearch = new TrendSearch();
+        List<UserLog> userLogs = userLogRepository.findByEmailInAndSearchDateBetween(emails, sDate.atStartOfDay(), eDate.atTime(23, 59, 59));
+
+        // 3. 검색어 빈도 계산
+        Map<String, Long> keywordFrequency = userLogs.stream()
+                .collect(Collectors.groupingBy(UserLog::getSearch, Collectors.counting()));
+
+        // 4. 빈도수 기준으로 검색어 정렬
+        return keywordFrequency.entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+    }*/
 }
+

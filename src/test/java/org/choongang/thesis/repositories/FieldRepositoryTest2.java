@@ -29,7 +29,7 @@ public class FieldRepositoryTest2 {
             XSSFWorkbook workbook = new XSSFWorkbook(opcPackage);
             XSSFSheet sheet = workbook.getSheetAt(0);
 
-            for (int i = 2; i <= 153; i++) {
+            for (int i = 2; i <= 161; i++) {
                 XSSFRow row = sheet.getRow(i);
 
                 //System.out.println("cell 타입: " + cell.getCellType());

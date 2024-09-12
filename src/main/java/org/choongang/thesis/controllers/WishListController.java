@@ -5,6 +5,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.choongang.global.ListData;
+import org.choongang.global.rests.JSONData;
+import org.choongang.thesis.entities.Thesis;
+import org.choongang.thesis.services.ThesisInfoService;
 import org.choongang.thesis.services.WishListService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,19 +20,20 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class WishListController {
     private final WishListService wishListService;
+    private final ThesisInfoService thesisInfoService;
 
-    //위시 리스트 조회(보류) add로 같이
-    /*
     @Operation(summary = "위시리스트 목록 조회", method = "GET")
     @ApiResponse(responseCode = "200")
     @GetMapping
-    public JSONData list() {
-        return null;
+    public JSONData list(@ModelAttribute ThesisSearch search) {
+
+        ListData<Thesis> data = thesisInfoService.getWishList(search);
+
+        return new JSONData(data);
     }
-    */
 
     //위시 리스트 추가
-    @Operation(summary = "위시리스트 조회/추가", method = "GET")
+    @Operation(summary = "위시리스트 추가", method = "GET")
     @ApiResponse(responseCode = "200")
     @Parameter(name = "tid", required = true, description = "경로변수, 찜한 논문 번호")
     @GetMapping("/{tid}")
