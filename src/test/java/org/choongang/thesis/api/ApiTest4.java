@@ -216,11 +216,10 @@ public class ApiTest4 {
         String name = parts[0];
         String subtitle = parts.length > 1 ? parts[1] : "";
 
-        List<Field> field = fieldRepository.findBySubfield(subtitle);
+        Field field = fieldRepository.findBySubfield(subtitle);
         if (field == null) {
             field = fieldRepository.findByName(name);
-        } if (!field.isEmpty()) {
-//          field = field.get(0);
+
         }
 //        if (field.getSubfield().equals(subtitle)) {
 //            String _id = field.getId();
