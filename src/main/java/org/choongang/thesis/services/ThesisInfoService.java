@@ -253,7 +253,9 @@ public class ThesisInfoService {
 
         List<Thesis> items = data.getContent(); // 개수에 맞게 조회된 데이터
         items.forEach(this::addInfo);
-        userLogService.save(skey);//검색한 키워드 저장
+        if(StringUtils.hasText(skey)){
+            userLogService.save(skey);//검색한 키워드 저장
+        }
         return new ListData<>(items, pagination);
     }
 
