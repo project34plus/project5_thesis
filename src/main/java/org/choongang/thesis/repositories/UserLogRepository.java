@@ -9,7 +9,6 @@ import java.util.List;
 public interface UserLogRepository extends JpaRepository<UserLog, Long> , QuerydslPredicateExecutor<UserLog> {
     List<UserLog> findByEmailOrderBySearchDateDesc(String email);
     //List<UserLog> findByEmailInAndSearchDateBetween(List<String> emails, LocalDateTime startDate, LocalDateTime endDate);
-//    List<UserLog> findByJobInSearchDateBetween(String job, LocalDateTime startDate, LocalDateTime endDate);
-
+    //List<UserLog> findByJobInSearchDateBetween(List<String> job, LocalDateTime startDate, LocalDateTime endDate);
 }
 
