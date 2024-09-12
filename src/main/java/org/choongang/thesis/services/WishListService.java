@@ -22,30 +22,32 @@ public class WishListService {
     private final WishListRepository wishListRepository;
 
     public void add(Long tid){
-        if(!memberUtil.isLogin()){
-            return;
-        }
+//        if(!memberUtil.isLogin()){
+//            return;
+//        }
         WishList wishList = WishList.builder()
                 .tid(tid)
-                .email(memberUtil.getMember().getEmail())
+//                .email(memberUtil.getMember().getEmail())
+                .email("testuser1@email.com")
                 .build();
         System.out.println("wishList : "+wishList);
         wishListRepository.saveAndFlush(wishList);
     }
 
     public void remove(Long tid){
-        if(!memberUtil.isLogin()){
-            return;
-        }
-        WishListId wishListId = new WishListId(tid,memberUtil.getMember().getEmail());
+//        if(!memberUtil.isLogin()){
+//            return;
+//        }
+        WishListId wishListId = new WishListId(tid, "testuser1@email.com");
         wishListRepository.deleteById(wishListId);
         wishListRepository.flush();
+        System.out.println("위시리스트 논문 삭제");
     }
 
     public List<Long> getList(){
         BooleanBuilder builder = new BooleanBuilder();
         QWishList wishList = QWishList.wishList;
-        builder.and(wishList.email.eq(memberUtil.getMember().getEmail()));
+        builder.and(wishList.email.eq("testuser1@email.com"));
 
         List<Long> items = ((List<WishList>)wishListRepository.findAll(builder, Sort.by(desc("createdAt")))).stream().map(WishList::getTid).toList();
 
