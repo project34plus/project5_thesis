@@ -3,6 +3,7 @@ package org.choongang.thesis.services;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.EnumExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.core.types.dsl.StringExpression;
@@ -35,9 +36,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.data.domain.Sort.Order.desc;
@@ -219,6 +218,91 @@ public class ThesisInfoService {
 
         }
         /* 검색 처리 E */
+
+        /* 고급 검색 처리 S */
+        List<String> sopts = search.getSopts();
+        List<String> skeys = search.getSkeys();
+        List<String> operators = Objects.requireNonNullElse(search.getOperators(), new ArrayList<>());
+        if (operators.size() > 0) {
+            int index = operators.indexOf("OR");
+            if (index == -1) operators.add("AND");
+            else operators.add(index, "OR");
+        } else {
+            operators.add("AND");
+        }
+
+        if (sopts != null && !sopts.isEmpty()) {
+            List<Map<String, BooleanExpression>> data = new ArrayList<>();
+            for (int i = 0; i < sopts.size(); i++) {
+                String _sopt = sopts.get(i);
+                String _skey = skeys.get(i);
+                String operator = operators.get(i);
+
+                if (!StringUtils.hasText(_sopt) || !StringUtils.hasText(_skey)) continue;
+
+                StringExpression expression = null;
+                if (_sopt.equals("poster")) {
+                    expression = thesis.poster;
+                } else if (_sopt.equals("title")) {
+                    expression = thesis.title;
+                } else if (_sopt.equals("thAbstract")) {
+                    expression = thesis.thAbstract;
+                } else if (_sopt.equals("reference")) {
+                    expression = thesis.reference;
+                } else if (_sopt.equals("publisher")) {
+                    expression = thesis.publisher;
+                } else if (_sopt.equals("language")) {
+                    expression = thesis.language;
+                }
+
+                BooleanExpression condition = expression.contains(_skey.trim());
+                Map<String, BooleanExpression> c = new HashMap<>();
+                c.put(operator, condition);
+                data.add(c);
+            }
+
+            String prevOperator = "";
+            BooleanBuilder orBuilder = new BooleanBuilder();
+            int i = 0;
+            for (Map<String, BooleanExpression> item : data) {
+                for (Map.Entry<String, BooleanExpression> entry : item.entrySet()) {
+                    String operator = entry.getKey();
+                    BooleanExpression condition = entry.getValue();
+                    if (prevOperator.equals("OR") &&  !operator.equals("OR")) {
+                        andBuilder.and(orBuilder);
+
+                        orBuilder = new BooleanBuilder();
+                    }
+
+                    if (operator.equals("NOT")) {
+                        condition = condition.not();
+                    }
+
+                    if (operator.equals("AND") || operator.equals("NOT")) {
+                        // 바로 다름 operator가 OR이면 orBuilder로 변경
+                        String nextOperator = "";
+                        try {
+                            nextOperator = operators.get(i + 1);
+                        } catch (Exception e) {}
+                        if (nextOperator.equals("OR")) {
+                            orBuilder.or(condition);
+                        } else {
+                            andBuilder.and(condition);
+                        }
+                    } else if (operator.equals("OR")) {
+                        orBuilder.or(condition);
+                    }
+
+                    prevOperator = operator;
+                    i++;
+                }
+            }
+            if (prevOperator.equals("OR")) {
+                andBuilder.and(orBuilder);
+            }
+        }
+
+        /* 고급 검색 처리 E */
 
         // 정렬 처리 S, -> 목록 조회 처리 추가 필요함
         String sort = search.getSort();
