@@ -19,7 +19,7 @@ public class InterestSaveTest {
     @DisplayName("관심사 저장 테스트")
     void test1() throws Exception {
         String email = "test01@test.org";
-        List<String> interests = List.of("인문학(문학)","인문학(중국어와문학)","사회과학(법학)");
+        List<String> interests = List.of("N-004","S-005");
 
         interestSaveService.save(interests, email);
         System.out.println(interests);
@@ -27,7 +27,7 @@ public class InterestSaveTest {
     @Test
     @DisplayName("관심사 수정 테스트")
     void test2() throws Exception {
-        List<String> list = List.of("인문학(사전학)");
+        List<String> list = List.of("N-004");
         interestSaveService.save(list, "test02@test.org");
         System.out.println(list);
     }
