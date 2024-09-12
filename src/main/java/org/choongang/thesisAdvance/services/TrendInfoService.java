@@ -1,3 +1,4 @@
+/*
 package org.choongang.thesisAdvance.services;
 
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class TrendInfoService {
 
         // 2. 조회한 직업과 기간을 기준으로 검색 기록 조회
         TrendSearch trendSearch = new TrendSearch();
-        List<UserLog> userLogs = userLogRepository.findByJobInSearchDateBetween(job, sDate.atStartOfDay(), eDate.atTime(23, 59, 59));
+        List<UserLog> userLogs = userLogRepository.findByJobInSearchDateBetween(job.get(0), sDate.atStartOfDay(), eDate.atTime(23, 59, 59));
 
         // 3. 검색어 빈도 계산
         Map<String, Long> keywordFrequency = userLogs.stream()
@@ -36,7 +37,8 @@ public class TrendInfoService {
                 .collect(Collectors.toList());
     }
 
-    /* 이메일로 조회
+*/
+/* 이메일로 조회
     public List<String> getPopluarKeywords(String job, LocalDate sDate, LocalDate eDate) {
         // 1. RestTemplate을 통해 직업군에 속한 회원 이메일을 외부 서비스에서 조회
         List<String> emails = memberService.getEmailsByJob(job);
@@ -54,6 +56,9 @@ public class TrendInfoService {
                 .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
-    }*/
+    }*//*
+
+
 }
 
+*/
