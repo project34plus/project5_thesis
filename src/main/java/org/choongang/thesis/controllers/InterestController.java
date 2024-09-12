@@ -39,7 +39,7 @@ public class InterestController {
     @ApiResponse(responseCode = "201")
     @Parameters({
             @Parameter(name = "email", required = true, description = "경로변수, 수정하려는 회원 이메일", example = "test01@test.org"),
-            @Parameter(name = "interests", description = "수정하려는 관심사", example = "[\"사회과학(국제/지역개발)\", \"사회과학(행정학)\"]")}
+            @Parameter(name = "interests", description = "수정하려는 관심사", example = "[\"S-005\", \"N-004\"]")}
     )
     @PatchMapping("/update/{email}")
     public ResponseEntity<Void> update(@PathVariable("email") String email, @RequestBody List<String> _interests) {
