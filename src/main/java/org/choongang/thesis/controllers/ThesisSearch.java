@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Data
-public class ThesisSearch extends AdvancedSearch { //고급 검색 상속
+public class ThesisSearch extends AdvancedSearch {
     private List<String> category;
     private List<String> fields;
     private ApprovalStatus approvalStatus; //승인 상태 필드

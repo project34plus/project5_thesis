@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ThesisViewId {
-    private int tid;
+    private Long tid;
     private int uid;
 }

@@ -31,11 +31,9 @@ public class TrendInfoService {
         if (sDate != null) {
             builder.and(userLog.searchDate.after(sDate.atStartOfDay()));
         }
-
         if (eDate != null) {
             builder.and(userLog.searchDate.before(eDate.atTime(LocalTime.MAX)));
         }
-
         if (job != null && !job.isEmpty()) {
             builder.and(userLog.job.in(job));
         }
@@ -55,7 +53,8 @@ public class TrendInfoService {
                 return data;
             }).toList();
         }
-
         return Collections.EMPTY_LIST;
     }
+
 }
+

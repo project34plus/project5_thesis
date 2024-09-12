@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ThesisViewDailyId {
-    private int tid;
+    private Long tid;
     private int uid;
     private LocalDate date;
 }

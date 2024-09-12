@@ -14,8 +14,8 @@ import java.time.LocalDate;
 @Data
 @Entity
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @IdClass(ThesisViewDailyId.class)
 public class ThesisViewDaily { //기간 조회, 통계에 사용->하루 지나면 기록 누적
     @Id
@@ -26,6 +26,7 @@ public class ThesisViewDaily { //기간 조회, 통계에 사용->하루 지나�
     @Column(name="_UID")
     private int uid;
 
+    @Id
     private LocalDate date;
 
     @Column(length=3000)
