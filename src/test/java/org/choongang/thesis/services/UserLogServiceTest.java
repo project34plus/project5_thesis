@@ -31,7 +31,7 @@ public class UserLogServiceTest {
     @WithUserDetails()
     void test1() throws Exception {
         ThesisSearch search = new ThesisSearch();
-        search.setSkey("테스트 키워드");
+        search.setSkey("테스트 키워드123");
         ListData<Thesis> mockData = new ListData<>();
 
         mockMvc.perform(get("/list?skey=테스트"))

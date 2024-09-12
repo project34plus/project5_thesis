@@ -2,6 +2,8 @@ package org.choongang.thesis.services;
 
 import com.querydsl.core.BooleanBuilder;
 import lombok.RequiredArgsConstructor;
+import org.choongang.global.Utils;
+import org.choongang.global.exceptions.BadRequestException;
 import org.choongang.member.MemberUtil;
 import org.choongang.thesis.entities.QWishList;
 import org.choongang.thesis.entities.WishList;
@@ -20,10 +22,11 @@ public class WishListService {
 
     private final MemberUtil memberUtil;
     private final WishListRepository wishListRepository;
+    private final Utils utils;
 
     public void add(Long tid){
         if(!memberUtil.isLogin()){
-            return;
+            throw new BadRequestException(utils.getMessage("Login.Required"));
         }
         WishList wishList = WishList.builder()
                 .tid(tid)
@@ -35,7 +38,7 @@ public class WishListService {
 
     public void remove(Long tid){
         if(!memberUtil.isLogin()){
-            return;
+            throw new BadRequestException(utils.getMessage("Login.Required"));
         }
         WishListId wishListId = new WishListId(tid,memberUtil.getMember().getEmail());
         wishListRepository.deleteById(wishListId);

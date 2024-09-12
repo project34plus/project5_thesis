@@ -70,8 +70,8 @@ public class ThesisController {
             //재등록입니다
             thesisSaveService.resubmitThesis(form.getTid(), form);
         } else {
-
             thesisSaveService.save(form);
+
         }
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -102,7 +102,7 @@ public class ThesisController {
     @PreAuthorize("permitAll()")
     public JSONData list(@ModelAttribute ThesisSearch search) {
         ListData<Thesis> data = thesisInfoService.getList(search);
-        userLogService.save(search.getSkey());//검색한 키워드 저장
+
         return new JSONData(data);
     }
 

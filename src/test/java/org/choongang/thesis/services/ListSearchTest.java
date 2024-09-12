@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalDate;
 
 @SpringBootTest
-public class listSearchTest {
+public class ListSearchTest {
 
     @Autowired
     private ThesisInfoService infoService;
