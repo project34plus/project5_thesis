@@ -3,6 +3,7 @@ package org.choongang.thesis.services;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.EnumExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.core.types.dsl.StringExpression;
@@ -35,9 +36,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.data.domain.Sort.Order.desc;
@@ -219,6 +218,10 @@ public class ThesisInfoService {
 
         }
         /* 검색 처리 E */
+
+        /* 고급 검색 처리 S */
+    //태현이 소스 추가하기
+        /* 고급 검색 처리 E */
 
         // 정렬 처리 S, -> 목록 조회 처리 추가 필요함
         String sort = search.getSort();
