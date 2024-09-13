@@ -1,6 +1,5 @@
 package org.choongang.thesisAdvance.services;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +8,7 @@ import org.choongang.global.ListData;
 import org.choongang.global.Utils;
 import org.choongang.global.exceptions.BadRequestException;
 import org.choongang.global.rests.ApiRequest;
+import org.choongang.member.entities.Member;
 import org.choongang.thesis.entities.Field;
 import org.choongang.thesis.entities.Thesis;
 import org.choongang.thesis.exceptions.FieldNotFoundException;
@@ -17,6 +17,7 @@ import org.choongang.thesis.repositories.InterestsRepository;
 import org.choongang.thesis.repositories.ThesisRepository;
 import org.choongang.thesis.services.ThesisInfoService;
 import org.choongang.thesisAdvance.controllers.RecommendSearch;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,18 +42,6 @@ public class RecommendInfoService {
      */
     public ListData<Thesis> getList(String email, RecommendSearch search) {
         /*회원별 소속 분야, 관심 분야 처리 S*/
-        //소속 분야
-        List<String> fields = null;
-        try {
-            ApiRequest result = apiRequest.request("/getBelonging/" + email,"member-service");
-            if(!result.getStatus().is2xxSuccessful()){
-                throw new BadRequestException("소속 분야 불러오기 실패");
-            }
-            fields = result.toList(new TypeReference<List<String>>() {});
-        } catch (BadRequestException e) {
-            e.printStackTrace();
-        }
-
         //관심분야
         List<String> ids = interestsRepository.findIdsByEmail(email);
         /*회원별 카테고리, 관심분야 처리 E*/
@@ -62,6 +51,24 @@ public class RecommendInfoService {
             Field field = fieldRepository.findById(i[1].toString()).orElseThrow(FieldNotFoundException::new);
             ids.add(field.getId());
         });
+        //소속 분야
+        try {
+            ApiRequest result = apiRequest.request("/account/" + email, "member-service", HttpMethod.GET);
+            if (!result.getStatus().is2xxSuccessful()) {
+                throw new BadRequestException("회원 정보 불러오기 실패");
+            }
+            Member member = result.toObj(Member.class);
+            if (member.getMemMajor() != null) {
+                ids.add(member.getMemMajor());
+            }
+            if (member.getMemMinor() != null) {
+                ids.add(member.getMemMinor());
+            }
+        } catch (BadRequestException e) {
+            e.printStackTrace();
+        }
+
+
         String sort = "viewCount_DESC";
         search.setSort(sort);
 

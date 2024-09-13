@@ -59,14 +59,14 @@ public class RecommendServiceTest {
     }
     @Test
     @DisplayName("회원 정보 불러오기 테스트")
-    @MockMember(authority = Authority.ADMIN)
+    @MockMember(email = "mock1@test.org", authority = Authority.ADMIN)
     void test3(){
         Member member = memberUtil.getMember();
         System.out.println(member);
-        ApiRequest result = apiRequest.request("/account","member-service", HttpMethod.GET);
+        ApiRequest result = apiRequest.request("/admin/info/"+member.getEmail(),"member-service", HttpMethod.GET);
         if(!result.getStatus().is2xxSuccessful()){
             throw new BadRequestException("Fail.MemberInfo");
         }
-        System.out.println(result);
+        System.out.println(result.getData().toString());
     }
 }
