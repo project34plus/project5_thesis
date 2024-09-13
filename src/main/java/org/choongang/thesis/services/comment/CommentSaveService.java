@@ -11,6 +11,8 @@ import org.choongang.thesis.repositories.ThesisRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.choongang.thesis.exceptions.*;
+
 
 @Service
 @RequiredArgsConstructor
@@ -45,15 +47,16 @@ public class CommentSaveService {
 
             data.setThesis(thesis);
 
-            data.setMember(memberUtil.getMember()); // 추가할 때 최초 1번만 반영
+            data.setUsername(memberUtil.getMember().getUserName()); // 추가할 때 최초 1번만 반영
+            data.setEmail(memberUtil.getMember().getEmail());
 
             data.setIp(request.getRemoteAddr());
             data.setUa(request.getHeader("User-Agent"));
         }
 
-        String commenter = form.getCommenter();
+        String commenter = form.getUsername();
         if (StringUtils.hasText(commenter)) {
-            data.setCommenter(commenter);
+            data.setUsername(commenter);
         }
 
         data.setContent(form.getContent());

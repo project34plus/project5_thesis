@@ -21,7 +21,7 @@ public class CommentValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
 
-        if (memberUtil.isLogin()) { // 로그인 상태 일때는 비회원 비밀번호 체크 X
+        if (memberUtil.isLogin()) { // 로그인 상태일 때는 패스
             return;
         }
     }
