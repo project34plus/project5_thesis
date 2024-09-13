@@ -4,6 +4,8 @@ import org.choongang.global.tests.MockMember;
 import org.choongang.member.MemberUtil;
 import org.choongang.member.constants.Authority;
 import org.choongang.member.entities.Member;
+import org.choongang.thesis.entities.WishList;
+import org.choongang.thesis.repositories.WishListRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,9 @@ public class RankingTest {
     @Autowired
     private MemberUtil memberUtil;
 
+    @Autowired
+    private WishListRepository wishListRepository;
+
     @Test
     @MockMember // 기본적인 회원 정보 들어감
     @DisplayName("MockMember 테스트")
@@ -39,4 +44,11 @@ public class RankingTest {
         mockMvc.perform(get("/trend/popular/field")).andDo(print());
     }
 
+    @Test
+    @MockMember
+    void test3() {
+        WishList wishList = new WishList();
+        wishList.setTid(1L);
+        wishListRepository.saveAndFlush(wishList);
+    }
 }
