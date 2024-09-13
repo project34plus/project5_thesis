@@ -23,7 +23,7 @@ public class FieldTest {
 
     @Test
     void excelToDB() {
-        File file = new File("D:/data/field3.xlsx");
+        File file = new File("/data/field3.xlsx");
         try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
              OPCPackage opcPackage = OPCPackage.open(bis)) {
 
