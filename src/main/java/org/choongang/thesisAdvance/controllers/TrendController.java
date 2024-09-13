@@ -30,4 +30,13 @@ public class TrendController {
 
         return new JSONData(items);
     }
+
+    @Operation(summary = "학문 분류별 검색 통계")
+    @GetMapping("/trend/field")
+    //@PreAuthorize("permitAll()")
+    public JSONData getFieldRanking(@ModelAttribute TrendSearch search){
+        Map<String, Map<String, Object>> data = trendInfoService.getFieldRanking(search);
+
+        return new JSONData(data);
+    }
 }
