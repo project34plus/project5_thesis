@@ -19,17 +19,17 @@ import java.time.LocalDate;
 @IdClass(ThesisViewDailyId.class)
 public class ThesisViewDaily { //기간 조회, 통계에 사용->하루 지나면 기록 누적
     @Id
-    @Column(name="_TID")
+    @Column(name = "_TID")
     private Long tid;
 
     @Id
-    @Column(name="_UID")
+    @Column(name = "_UID")
     private int uid;
 
     @Id
     @Column(name = "dailyDate")
     private LocalDate date;
 
-    @Column(length=3000)
+    @Column(length = 3000)
     private String fields;
 }
