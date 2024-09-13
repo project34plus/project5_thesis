@@ -9,6 +9,7 @@ import org.choongang.thesis.entities.QField;
 import org.choongang.thesis.entities.QThesisViewDaily;
 import org.choongang.thesis.entities.QUserLog;
 import org.choongang.thesis.repositories.FieldRepository;
+import org.choongang.thesis.services.WishListService;
 import org.choongang.thesisAdvance.controllers.TrendSearch;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ public class TrendInfoService {
 
     private final JPAQueryFactory queryFactory;
     private final FieldRepository fieldRepository;
+    public final WishListService wishListService;
 
     // 직업별 인기 키워드 조회
     public List<Map<String, Object>> getKeywordRankingByJob(TrendSearch search) {
@@ -76,7 +78,7 @@ public class TrendInfoService {
             builder.and(daily.date.loe(eDate));
         }
 
-        List<String> items = queryFactory.select(daily.fields)
+        List<Tuple> items = queryFactory.select(daily.tid, daily.fields)
                 .from(daily)
                 .where(builder)
                 .fetch();
@@ -85,7 +87,8 @@ public class TrendInfoService {
             return null;
         }
 
-        List<String> fieldIds = items.stream().flatMap(s -> Arrays.stream(s.split(","))).distinct().toList();
+        List<String> fieldIds = items.stream().flatMap(s -> Arrays.stream(s.get(daily.fields).split(","))).distinct().toList();
+
         QField field = QField.field;
         List<Field> fields = (List<Field>) fieldRepository.findAll(field.id.in(fieldIds));
         Map<String, Map<String, Object>> statData = fields.stream().collect(Collectors.toMap(Field::getId, f -> {
@@ -97,8 +100,8 @@ public class TrendInfoService {
             return data;
         }));
 
-        for (String item : items) {
-            for (String name : item.split(",")) {
+        for (Tuple item : items) {
+            for (String name : item.get(daily.fields).split(",")) {
                 Map<String, Object> data = statData.get(name);
                 if (data == null) {
                     data = new HashMap<>();
@@ -110,6 +113,26 @@ public class TrendInfoService {
                 statData.put(name, data); // 통계 데이터 쌓임
             }
         }
+
+        /* 찜하기 데이터 처리 S */
+        Map<String, Long> wishCounts = new HashMap<>();
+        for (Tuple item : items) {
+            Long tid = item.get(daily.tid);
+            String _fields = item.get(daily.fields);
+            long count = wishListService.getCount(tid);
+            for (String _field : _fields.split(",")) {
+                long _count = wishCounts.getOrDefault(_field, 0L);
+                wishCounts.put(_field, _count + count);
+            }
+        }
+
+        for (Map.Entry<String, Long> entry : wishCounts.entrySet()) {
+            String key = entry.getKey();
+            long count = entry.getValue();
+            Map<String, Object> data = statData.get(key);
+            data.put("wishCount", count);
+        }
+        /* 찜하기 데이터 처리 E */
 
         return statData;
     }
