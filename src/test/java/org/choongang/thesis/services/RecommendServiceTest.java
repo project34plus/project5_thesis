@@ -4,7 +4,10 @@ import jakarta.persistence.EntityManager;
 import org.choongang.global.ListData;
 import org.choongang.global.exceptions.BadRequestException;
 import org.choongang.global.rests.ApiRequest;
+import org.choongang.global.tests.MockMember;
 import org.choongang.member.MemberUtil;
+import org.choongang.member.constants.Authority;
+import org.choongang.member.entities.Member;
 import org.choongang.thesis.entities.Thesis;
 import org.choongang.thesisAdvance.controllers.RecommendSearch;
 import org.choongang.thesisAdvance.services.RecommendInfoService;
@@ -56,9 +59,10 @@ public class RecommendServiceTest {
     }
     @Test
     @DisplayName("회원 정보 불러오기 테스트")
-    @WithMockUser(username = "mock1@test.org")
+    @MockMember(authority = Authority.ADMIN)
     void test3(){
-
+        Member member = memberUtil.getMember();
+        System.out.println(member);
         ApiRequest result = apiRequest.request("/account","member-service", HttpMethod.GET);
         if(!result.getStatus().is2xxSuccessful()){
             throw new BadRequestException("Fail.MemberInfo");
