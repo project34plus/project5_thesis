@@ -10,6 +10,7 @@ import org.choongang.thesis.entities.WishList;
 import org.choongang.thesis.entities.WishListId;
 import org.choongang.thesis.repositories.WishListRepository;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -25,26 +26,24 @@ public class WishListService {
     private final WishListRepository wishListRepository;
     private final Utils utils;
 
+    @PreAuthorize("isAuthenticated()")
     public void add(Long tid) {
-        if (!memberUtil.isLogin()) {
-            throw new BadRequestException(utils.getMessage("Login.Required"));
-        }
         WishList wishList = WishList.builder()
                 .tid(tid)
                 .build();
+
         wishListRepository.saveAndFlush(wishList);
     }
 
+    @PreAuthorize("isAuthenticated()")
     public void remove(Long tid) {
-        if (!memberUtil.isLogin()) {
-            throw new BadRequestException(utils.getMessage("Login.Required"));
-        }
         WishListId wishListId = new WishListId(tid, memberUtil.getMember().getEmail());
         wishListRepository.deleteById(wishListId);
         wishListRepository.flush();
         System.out.println("위시리스트 논문 삭제");
     }
 
+    @PreAuthorize("isAuthenticated()")
     public List<Long> getList() {
         if (!memberUtil.isLogin()) {
             return Collections.EMPTY_LIST;

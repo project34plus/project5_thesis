@@ -51,4 +51,5 @@ public class RankingTest {
         wishList.setTid(1L);
         wishListRepository.saveAndFlush(wishList);
     }
+
 }

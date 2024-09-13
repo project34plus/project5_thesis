@@ -24,7 +24,7 @@ public class TrendInfoService {
 
     private final JPAQueryFactory queryFactory;
     private final FieldRepository fieldRepository;
-    private final WishListService wishListService;
+    public final WishListService wishListService;
 
     // 직업별 인기 키워드 조회
     public List<Map<String, Object>> getKeywordRankingByJob(TrendSearch search) {
@@ -88,6 +88,7 @@ public class TrendInfoService {
         }
 
         List<String> fieldIds = items.stream().flatMap(s -> Arrays.stream(s.get(daily.fields).split(","))).distinct().toList();
+
         QField field = QField.field;
         List<Field> fields = (List<Field>) fieldRepository.findAll(field.id.in(fieldIds));
         Map<String, Map<String, Object>> statData = fields.stream().collect(Collectors.toMap(Field::getId, f -> {
@@ -99,7 +100,6 @@ public class TrendInfoService {
             return data;
         }));
 
-        //statData
         for (Tuple item : items) {
             for (String name : item.get(daily.fields).split(",")) {
                 Map<String, Object> data = statData.get(name);
@@ -116,11 +116,11 @@ public class TrendInfoService {
 
         /* 찜하기 데이터 처리 S */
         Map<String, Long> wishCounts = new HashMap<>();
-        for(Tuple item : items) {
+        for (Tuple item : items) {
             Long tid = item.get(daily.tid);
             String _fields = item.get(daily.fields);
             long count = wishListService.getCount(tid);
-            for (String _field : _fields.split(",")){
+            for (String _field : _fields.split(",")) {
                 long _count = wishCounts.getOrDefault(_field, 0L);
                 wishCounts.put(_field, _count + count);
             }
