@@ -84,7 +84,7 @@ public class CommentInfoService {
         }
 
         // 수정 버튼 노출 여부
-        // 관리자 - 노출, 회원 게시글 - 직접 작성한 게시글
+        // 관리자 - 노출, 회원 댓글 - 직접 작성한 댓글
         boolean showEdit = memberUtil.isAdmin() || mine || member == null;
 
         data.setShowEdit(showEdit);
@@ -105,6 +105,5 @@ public class CommentInfoService {
         data.setCommentCount(total);
 
         thesisRepository.flush();
-
     }
 }

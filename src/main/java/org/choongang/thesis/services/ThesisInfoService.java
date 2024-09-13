@@ -221,8 +221,8 @@ public class ThesisInfoService {
         /* 검색 처리 E */
 
         /* 고급 검색 처리 S */
-        //and -> or 이면 하나로 묶어주고 or -> and 이면 앞에거랑 묶어주기
-//        System.out.println("search : " + search);
+        //and -> or 이면 하나로 묶어주고 or -> and 이면 앞에 거랑 묶어주기
+        System.out.println("search : " + search);
         List<String> sopts = search.getSopts();
         List<String> skeys = search.getSkeys();
         List<String> operators = Objects.requireNonNullElse(search.getOperators(), new ArrayList<>());
@@ -265,6 +265,7 @@ public class ThesisInfoService {
                 data.add(c);
             }
 
+            System.out.println("data: " + data);
             String prevOperator = "";
             BooleanBuilder orBuilder = new BooleanBuilder();
             int i = 0;

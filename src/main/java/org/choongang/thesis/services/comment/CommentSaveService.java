@@ -6,12 +6,12 @@ import org.choongang.member.MemberUtil;
 import org.choongang.thesis.controllers.RequestComment;
 import org.choongang.thesis.entities.CommentData;
 import org.choongang.thesis.entities.Thesis;
+import org.choongang.thesis.exceptions.CommentNotFoundException;
+import org.choongang.thesis.exceptions.ThesisNotFoundException;
 import org.choongang.thesis.repositories.CommentDataRepository;
 import org.choongang.thesis.repositories.ThesisRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.choongang.thesis.exceptions.*;
 
 
 @Service
@@ -24,7 +24,6 @@ public class CommentSaveService {
     private final CommentInfoService commentInfoService;
 
     private final MemberUtil memberUtil;
-    private final PasswordEncoder encoder;
     private final HttpServletRequest request;
 
     public CommentData save(RequestComment form) {
@@ -40,10 +39,10 @@ public class CommentSaveService {
 
         } else { // 댓글 추가
             data = new CommentData();
-            // 게시글 번호는 변경 X -> 추가할 때 최초 1번만 반영
-            Long boardDataSeq = form.getTid();
+            // 논문 번호는 변경 X -> 추가할 때 최초 1번만 반영
+            Long tid = form.getTid();
 
-            Thesis thesis = thesisRepository.findById(boardDataSeq).orElseThrow(ThesisNotFoundException::new);
+            Thesis thesis = thesisRepository.findById(tid).orElseThrow(ThesisNotFoundException::new);
 
             data.setThesis(thesis);
 
