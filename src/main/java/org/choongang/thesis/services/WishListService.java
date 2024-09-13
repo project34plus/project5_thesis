@@ -49,7 +49,7 @@ public class WishListService {
     public List<Long> getList(){
         BooleanBuilder builder = new BooleanBuilder();
         QWishList wishList = QWishList.wishList;
-        builder.and(wishList.email.eq("testuser1@email.com"));
+        builder.and(wishList.email.eq(memberUtil.getMember().getEmail()));
 
         List<Long> items = ((List<WishList>)wishListRepository.findAll(builder, Sort.by(desc("createdAt")))).stream().map(WishList::getTid).toList();
 
