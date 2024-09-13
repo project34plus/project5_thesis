@@ -26,4 +26,6 @@ public class ThesisSearch extends AdvancedSearch {
     private String country; // 국가
 
     private String sort; //정렬 조건
+
+
 }
