@@ -1,11 +1,13 @@
 package org.choongang.thesisAdvance.services;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.choongang.file.services.FileInfoService;
 import org.choongang.global.ListData;
 import org.choongang.global.Utils;
+import org.choongang.global.exceptions.BadRequestException;
 import org.choongang.global.rests.ApiRequest;
 import org.choongang.thesis.entities.Field;
 import org.choongang.thesis.entities.Thesis;
@@ -40,16 +42,16 @@ public class RecommendInfoService {
     public ListData<Thesis> getList(String email, RecommendSearch search) {
         /*회원별 소속 분야, 관심 분야 처리 S*/
         //소속 분야
-        /*List<String> belongings = null;
+        List<String> fields = null;
         try {
             ApiRequest result = apiRequest.request("/getBelonging/" + email,"member-service");
             if(!result.getStatus().is2xxSuccessful()){
                 throw new BadRequestException("소속 분야 불러오기 실패");
             }
-            belongings = result.toList(new TypeReference<List<String>>() {});
+            fields = result.toList(new TypeReference<List<String>>() {});
         } catch (BadRequestException e) {
             e.printStackTrace();
-        }*/
+        }
 
         //관심분야
         List<String> ids = interestsRepository.findIdsByEmail(email);

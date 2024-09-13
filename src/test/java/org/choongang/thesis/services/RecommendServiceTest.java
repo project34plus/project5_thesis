@@ -2,13 +2,18 @@ package org.choongang.thesis.services;
 
 import jakarta.persistence.EntityManager;
 import org.choongang.global.ListData;
+import org.choongang.global.exceptions.BadRequestException;
+import org.choongang.global.rests.ApiRequest;
 import org.choongang.member.MemberUtil;
 import org.choongang.thesis.entities.Thesis;
 import org.choongang.thesisAdvance.controllers.RecommendSearch;
 import org.choongang.thesisAdvance.services.RecommendInfoService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @SpringBootTest
+@AutoConfigureMockMvc
 public class RecommendServiceTest {
     @Autowired
     private EntityManager em;
@@ -23,6 +29,8 @@ public class RecommendServiceTest {
     private RecommendInfoService recommendInfoService;
     @Autowired
     private MemberUtil memberUtil;
+    @Autowired
+    private ApiRequest apiRequest;
 
     @Test
     void test1() {
@@ -45,5 +53,16 @@ public class RecommendServiceTest {
         RecommendSearch search = new RecommendSearch();
         ListData<Thesis> data = recommendInfoService.getList(SecurityContextHolder.getContext().getAuthentication().getName(), search);
         System.out.println(data.getItems().toString());
+    }
+    @Test
+    @DisplayName("회원 정보 불러오기 테스트")
+    @WithMockUser(username = "mock1@test.org")
+    void test3(){
+
+        ApiRequest result = apiRequest.request("/account","member-service", HttpMethod.GET);
+        if(!result.getStatus().is2xxSuccessful()){
+            throw new BadRequestException("Fail.MemberInfo");
+        }
+        System.out.println(result);
     }
 }
