@@ -143,6 +143,7 @@ public class ThesisInfoService {
                 enumExpression = thesis.category;
             } else if (sopt.equals("FIELD")) {
 
+                //추가할 예정
             } else if (sopt.equals("TITLE")) {
                 expression = thesis.title;
             } else if (sopt.equals("POSTER")) {
@@ -173,7 +174,7 @@ public class ThesisInfoService {
         if (poster != null && StringUtils.hasText(poster.trim())) {
             andBuilder.and(thesis.poster.contains(poster));
         }
-        //초록 검색 -> 초록은 검색해야 할 양이 많기 때문에 빼는 게 좋을 수도
+        //초록 검색
         if (thAbstract != null && StringUtils.hasText(thAbstract.trim())) {
             andBuilder.and(thesis.thAbstract.contains(thAbstract));
         }

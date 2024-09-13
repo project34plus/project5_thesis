@@ -39,8 +39,14 @@ public class ListSearchTest {
     void advancedSearchTest() {
         search = new ThesisSearch();
         search.setPublisher("학회");
-        search.setOperators(List.of("AND", "OR"));
+        search.setOperators(List.of("AND"));
         search.setTitle("고등");
+        /*
+            http://localhost:4003/list?
+            sopts=publisher&skeys=학회&
+            operators=AND&
+            sopts=title&skeys=고등
+        */
 
         System.out.println(search);
 
