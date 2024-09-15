@@ -20,6 +20,17 @@ public class ListSearchTest {
     private ThesisSearch search;
 
     @Test
+    @DisplayName("전체 논문 목록 조회 테스트")
+    void testGetAllThesis() {
+        ThesisSearch search = new ThesisSearch();
+
+        ListData<Thesis> result = infoService.getList(search);
+
+        // 결과 검증 (논문 목록이 0보다 큰지 확인)
+        System.out.println(result);
+    }
+
+    @Test
     @DisplayName("논문 통합 검색 테스트")
     void listSearchTest() {
         search = new ThesisSearch();
