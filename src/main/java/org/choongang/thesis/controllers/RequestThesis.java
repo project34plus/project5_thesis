@@ -61,6 +61,9 @@ public class RequestThesis {
 
     private String rejectedReason;
 
+    private String userName;
+    private String email;
+
 
     private ApprovalStatus approvalStatus; //승인 상태 필드
 
