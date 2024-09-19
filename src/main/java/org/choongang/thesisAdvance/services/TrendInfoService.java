@@ -110,7 +110,7 @@ public class TrendInfoService {
                     int count = (int) data.getOrDefault("count", 0);
                     data.put("count", count + 1);
                 }
-                statData.put(name, data); // 통계 데이터 쌓임
+                statData.put(name, data); // 통계 데이터 쌓기
             }
         }
 
@@ -126,6 +126,7 @@ public class TrendInfoService {
             }
         }
 
+        //statData 에 찜하기 데이터 추가 처리
         for (Map.Entry<String, Long> entry : wishCounts.entrySet()) {
             String key = entry.getKey();
             long count = entry.getValue();
