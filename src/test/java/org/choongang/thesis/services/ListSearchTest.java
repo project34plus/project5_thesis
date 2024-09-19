@@ -20,6 +20,17 @@ public class ListSearchTest {
     private ThesisSearch search;
 
     @Test
+    @DisplayName("전체 논문 목록 조회 테스트")
+    void testGetAllThesis() {
+        ThesisSearch search = new ThesisSearch();
+
+        ListData<Thesis> result = infoService.getList(search);
+
+        // 결과 검증 (논문 목록이 0보다 큰지 확인)
+        System.out.println(result);
+    }
+
+    @Test
     @DisplayName("논문 통합 검색 테스트")
     void listSearchTest() {
         search = new ThesisSearch();
@@ -38,13 +49,25 @@ public class ListSearchTest {
     @DisplayName("고급 검색 테스트")
     void advancedSearchTest() {
         search = new ThesisSearch();
-        search.setPublisher("학회");
-        search.setOperators(List.of("AND", "OR"));
-        search.setTitle("고등");
+
+        //어떻게 하는 거지..
+        search.setSopts(List.of("publisher", "title"));
+        search.setOperators(List.of("AND"));
+        search.setSkeys(List.of("학회", "고등"));
+        /*
+            http://localhost:4003/list?
+            sopts=publisher&skeys=학회&
+            operators=AND&
+            sopts=title&skeys=고등
+        */
 
         System.out.println(search);
 
+        System.out.println("sopts: " + search.getSopts());
+        System.out.println("skeys: " + search.getSkeys());
+        System.out.println("opers: " + search.getOperators());
+
         ListData<Thesis> result = infoService.getList(search);
-        System.out.println(result);
+        System.out.println("result: "+ result);
     }
 }
