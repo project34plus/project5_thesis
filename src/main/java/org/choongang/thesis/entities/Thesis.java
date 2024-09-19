@@ -48,10 +48,11 @@ public class Thesis extends BaseMemberEntity {
     @Lob
     private String reference; // 참고 문헌
 
-    @Column(length=65, nullable = false)
+    @Column(length=65) //nullable false 잠시뺴둠 ㅎㅎ
     private String gid; // 그룹 ID
 
     private boolean visible; //  공개 여부
+
 
     private int viewCount; // 조회수
 

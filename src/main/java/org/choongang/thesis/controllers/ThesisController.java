@@ -42,10 +42,11 @@ public class ThesisController {
 
     @Operation(summary = "논문 등록", method = "POST")
     @ApiResponse(responseCode = "201")
-    @PostMapping
+    @PostMapping("/upload")
     public ResponseEntity<Void> register(@Valid @RequestBody RequestThesis form, Errors errors) {
         form.setMode("register");
         form.setActionType("submit");
+        System.out.println("받은 데이터: " + form);
         return save(form, errors);
     }
 
