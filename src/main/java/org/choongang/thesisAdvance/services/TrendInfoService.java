@@ -1,88 +1,141 @@
 package org.choongang.thesisAdvance.services;
 
 import com.querydsl.core.BooleanBuilder;
-import jakarta.servlet.http.HttpServletRequest;
+import com.querydsl.core.Tuple;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.choongang.file.services.FileInfoService;
-import org.choongang.global.Pagination;
-import org.choongang.member.MemberUtil;
-import org.choongang.thesis.controllers.ThesisSearch;
-import org.choongang.thesis.entities.QThesis;
-import org.choongang.thesis.entities.Thesis;
-import org.choongang.thesis.repositories.ThesisRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.choongang.thesis.entities.Field;
+import org.choongang.thesis.entities.QField;
+import org.choongang.thesis.entities.QThesisViewDaily;
+import org.choongang.thesis.entities.QUserLog;
+import org.choongang.thesis.repositories.FieldRepository;
+import org.choongang.thesis.services.WishListService;
+import org.choongang.thesisAdvance.controllers.TrendSearch;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
-
-import static org.springframework.data.domain.Sort.Order.desc;
+import java.time.LocalTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class TrendInfoService {
-    private final ThesisRepository thesisRepository;
-    private final FileInfoService fileInfoService;
-    private final HttpServletRequest request;
-    private final MemberUtil memberUtil;
 
-    public List<Thesis> getListByDateRange(ThesisSearch search) {
-        int page = Math.max(search.getPage(), 1);
-        int limit = search.getLimit();
-        limit = limit < 1 ? 20 : limit;
+    private final JPAQueryFactory queryFactory;
+    private final FieldRepository fieldRepository;
+    public final WishListService wishListService;
 
+    // 직업별 인기 키워드 조회
+    public List<Map<String, Object>> getKeywordRankingByJob(TrendSearch search) {
         LocalDate sDate = search.getSDate();
         LocalDate eDate = search.getEDate();
+        List<String> job = search.getJob();
 
-        /* 검색 처리 S */
-        QThesis thesis = QThesis.thesis;
-        BooleanBuilder andBuilder = new BooleanBuilder();
-
-        String sopt = search.getSopt();
-        String skey = search.getSkey();
-        List<String> category = search.getCategory();
-        List<String> fields = search.getFields();
-        List<String> email = search.getEmail();
-
-        /*
-        if (search.getApprovalStatus() != null) {
-            boolean approval = memberUtil.isAdmin() ? search.getApproval() : true;
-            andBuilder.and(thesis.approval.eq(search.getApproval()));
+        QUserLog userLog = QUserLog.userLog;
+        BooleanBuilder builder = new BooleanBuilder();
+        if (sDate != null) {
+            builder.and(userLog.searchDate.after(sDate.atStartOfDay()));
+        }
+        if (eDate != null) {
+            builder.and(userLog.searchDate.before(eDate.atTime(LocalTime.MAX)));
+        }
+        if (job != null && !job.isEmpty()) {
+            builder.and(userLog.job.in(job));
         }
 
-        //작성한 회원 이메일로 조회
-        if(email != null && !email.isEmpty()) {
-            andBuilder.and(thesis.email.in(email));
+        List<Tuple> items = queryFactory.select(userLog.job, userLog.search.count(), userLog.search)
+                .from(userLog)
+                .groupBy(userLog.job, userLog.search)
+                .orderBy(userLog.search.count().desc())
+                .fetch();
+
+        if (items != null && !items.isEmpty()) {
+            return items.stream().map(t -> {
+                Map<String, Object> data = new HashMap<>();
+                data.put("job", t.get(userLog.job));
+                data.put("count", t.get(userLog.search.count()));
+                data.put("search", t.get(userLog.search));
+                return data;
+            }).toList();
         }
-
-        if (!memberUtil.isAdmin()) {
-            andBuilder.and(thesis.visible.eq(true))
-                    .and(thesis.approval.eq(true));
-
-        }
-
-        // 기간 검색
-        if(sDate != null) {
-            andBuilder.and(thesis.createdAt.after(sDate.atStartOfDay()));
-        }
-        if(eDate != null) {
-            andBuilder.and(thesis.createdAt.before(eDate.atStartOfDay()));
-        }*/
-
-        /* 검색 처리 E */
-
-        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(desc("createdAt")));
-        Page<Thesis> data = thesisRepository.findAll(andBuilder, pageable);
-
-        long total = data.getTotalElements();
-        Pagination pagination = new Pagination(page, (int)total, 10, limit, request);
-
-        List<Thesis> items = data.getContent();
-
-        return null;
-                //new ListData<>(items, pagination);
+        return Collections.EMPTY_LIST;
     }
+
+    // 중분류 -> 조회된 만큼 카운트
+    public Map<String, Map<String, Object>> getFieldRanking(TrendSearch search) {
+        LocalDate sDate = search.getSDate();
+        LocalDate eDate = search.getEDate();
+        if (sDate == null) {
+            return null;
+        }
+
+        QThesisViewDaily daily = QThesisViewDaily.thesisViewDaily;
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(daily.date.goe(sDate));
+
+        if (eDate != null) {
+            builder.and(daily.date.loe(eDate));
+        }
+
+        List<Tuple> items = queryFactory.select(daily.tid, daily.fields)
+                .from(daily)
+                .where(builder)
+                .fetch();
+
+        if (items == null || items.isEmpty()) {
+            return null;
+        }
+
+        List<String> fieldIds = items.stream().flatMap(s -> Arrays.stream(s.get(daily.fields).split(","))).distinct().toList();
+
+        QField field = QField.field;
+        List<Field> fields = (List<Field>) fieldRepository.findAll(field.id.in(fieldIds));
+        Map<String, Map<String, Object>> statData = fields.stream().collect(Collectors.toMap(Field::getId, f -> {
+            Map<String, Object> data = new HashMap<>();
+            data.put("name", f.getName());
+            data.put("subfield", f.getSubfield());
+            data.put("count", 0);
+
+            return data;
+        }));
+
+        for (Tuple item : items) {
+            for (String name : item.get(daily.fields).split(",")) {
+                Map<String, Object> data = statData.get(name);
+                if (data == null) {
+                    data = new HashMap<>();
+                    data.put("count", 1);
+                } else {
+                    int count = (int) data.getOrDefault("count", 0);
+                    data.put("count", count + 1);
+                }
+                statData.put(name, data); // 통계 데이터 쌓임
+            }
+        }
+
+        /* 찜하기 데이터 처리 S */
+        Map<String, Long> wishCounts = new HashMap<>();
+        for (Tuple item : items) {
+            Long tid = item.get(daily.tid);
+            String _fields = item.get(daily.fields);
+            long count = wishListService.getCount(tid);
+            for (String _field : _fields.split(",")) {
+                long _count = wishCounts.getOrDefault(_field, 0L);
+                wishCounts.put(_field, _count + count);
+            }
+        }
+
+        for (Map.Entry<String, Long> entry : wishCounts.entrySet()) {
+            String key = entry.getKey();
+            long count = entry.getValue();
+            Map<String, Object> data = statData.get(key);
+            data.put("wishCount", count);
+        }
+        /* 찜하기 데이터 처리 E */
+
+        return statData;
+    }
+
 }
+

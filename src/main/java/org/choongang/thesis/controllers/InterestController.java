@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "Interest", description = "관심사 API 앞에 /interest 붙여야함..")
+@Tag(name = "Interest", description = "관심사 API")
 @RestController
 @RequestMapping("/interest")
 @RequiredArgsConstructor
@@ -38,10 +38,11 @@ public class InterestController {
     @Operation(summary = "회원 관심사 수정", method = "PATCH")
     @ApiResponse(responseCode = "201")
     @Parameters({
-            @Parameter(name = "email", required = true, description = "경로변수, 수정하려는 회원 이메일", example = "test01@test.org")}
+            @Parameter(name = "email", required = true, description = "경로변수, 수정하려는 회원 이메일", example = "test01@test.org"),
+            @Parameter(name = "interests", description = "수정하려는 관심사", example = "[\"S-005\", \"N-004\"]")}
     )
     @PatchMapping("/update/{email}")
-    public ResponseEntity<Void> update(@PathVariable("email") String email, @RequestBody List<String> _interests) {
+    public ResponseEntity<Void> update(@PathVariable("email") String email, @RequestBody List<Interests> _interests) {
         // id
         interestSaveService.save(_interests, email);
         return ResponseEntity.status(HttpStatus.CREATED).build();

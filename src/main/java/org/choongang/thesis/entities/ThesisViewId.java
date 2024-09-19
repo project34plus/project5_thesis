@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class VisitHistoryId {
+public class ThesisViewId {
     private Long tid;
-    private String email;
+    private int uid;
 }
