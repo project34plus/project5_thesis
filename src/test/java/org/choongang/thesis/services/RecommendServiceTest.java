@@ -69,4 +69,13 @@ public class RecommendServiceTest {
         }
         System.out.println(result.getData().toString());
     }
+    @Test
+    @MockMember(email="test@test.org")
+    void test4(){
+        ApiRequest result = apiRequest.request("/recommend/list","thesis-service");
+        if(!result.getStatus().is2xxSuccessful()){
+            throw new BadRequestException("잘못된 요청");
+        }
+        System.out.println(result.getData().toString());
+    }
 }
