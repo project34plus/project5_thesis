@@ -3,6 +3,7 @@ package org.choongang.thesis.services;
 import com.querydsl.core.BooleanBuilder;
 import lombok.RequiredArgsConstructor;
 import org.choongang.global.Utils;
+import org.choongang.global.exceptions.BadRequestException;
 import org.choongang.member.MemberUtil;
 import org.choongang.thesis.entities.QWishList;
 import org.choongang.thesis.entities.WishList;

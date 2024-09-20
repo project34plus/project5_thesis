@@ -48,12 +48,15 @@ public class Thesis extends BaseMemberEntity {
     @Lob
     private String reference; // 참고 문헌
 
-    @Column(length=65, nullable = false)
+    @Column(length=65) //nullable false 잠시뺴둠 ㅎㅎ
     private String gid; // 그룹 ID
 
     private boolean visible; //  공개 여부
 
+
     private int viewCount; // 조회수
+
+    private int commentCount; // 댓글 수
 
     @Column(length=80)
     private String publisher; // 발행기관
@@ -79,7 +82,6 @@ public class Thesis extends BaseMemberEntity {
     @Lob
     private String rejectedReason; // 반려 사유
 
-
     @Transient
     private FileInfo fileInfo;
 
@@ -88,5 +90,11 @@ public class Thesis extends BaseMemberEntity {
 
     @Transient
     private Map<String, String[]> _fields;
+
+    @Transient
+    private boolean mine; // 논문 소유자 여부
+
+    @Transient
+    private List<CommentData> comments; // 댓글 목록
 
 }

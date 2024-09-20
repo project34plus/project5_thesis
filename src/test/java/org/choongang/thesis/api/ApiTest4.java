@@ -216,10 +216,23 @@ public class ApiTest4 {
         String name = parts[0];
         String subtitle = parts.length > 1 ? parts[1] : "";
 
-        Field field = fieldRepository.findBySubfield(subtitle);
-        if (field == null) {
-            field = fieldRepository.findByName(name);
-            //name이 여러개인 경우도 고려해야 함
+        Field field = null;
+        if (subtitle != null && !subtitle.isEmpty()) {
+            // subtitle로 Field를 찾기
+            field = fieldRepository.findBySubfield(subtitle);
+            if (field == null) {
+                // 중분류가 없는 경우, 대분류명으로 "미분류"를 가진 Field를 찾기
+                field = fieldRepository.findByName(name).stream()
+                        .filter(f -> "미분류".equals(f.getSubfield()))
+                        .findFirst()
+                        .orElse(null);
+            }
+        } else {
+            // 중분류가 없는 경우, 대분류명으로 "미분류"를 가진 Field를 찾기
+            field = fieldRepository.findByName(name).stream()
+                    .filter(f -> "미분류".equals(f.getSubfield()))
+                    .findFirst()
+                    .orElse(null);
         }
 
         // 첫 번째 제목을 추출
