@@ -1,7 +1,6 @@
 package org.choongang.thesis.controllers;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.choongang.file.entities.FileInfo;
 import org.choongang.thesis.constants.ApprovalStatus;
@@ -14,16 +13,15 @@ public class RequestThesis {
 
     private Long tid;
 
-    @NotBlank
+
     private String mode; //register, update
 
-    @NotBlank
     private String actionType; //등록, 재등록 구분
 
     @NotBlank
     private String category;
 
-    @NotNull
+
     private List<String> fields; //학문별 분류 코드 목록
 
     @NotBlank
@@ -38,7 +36,7 @@ public class RequestThesis {
 
     private String reference; // 참고 문헌
 
-    @NotBlank
+
     private String gid = UUID.randomUUID().toString(); // 그룹 ID
 
     private boolean visible; //  공개 여부
@@ -60,6 +58,9 @@ public class RequestThesis {
     private int minorVersion; // 버전관리
 
     private String rejectedReason;
+
+    private String userName;
+    private String email;
 
 
     private ApprovalStatus approvalStatus; //승인 상태 필드
