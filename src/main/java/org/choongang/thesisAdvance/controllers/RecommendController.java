@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.choongang.global.ListData;
+import org.choongang.global.exceptions.BadRequestException;
 import org.choongang.global.rests.JSONData;
 import org.choongang.member.MemberUtil;
 import org.choongang.member.entities.Member;
@@ -32,10 +33,10 @@ public class RecommendController {
     @PreAuthorize("permitAll()")
     public JSONData list(@ModelAttribute RecommendSearch recommendSearch) {
         Member member = memberUtil.getMember();
-//        if(member==null){
-//            throw new BadRequestException("Login.Required");
-//        }
-        ListData<Thesis> data = recommendInfoService.getList("test01@test.org", recommendSearch);
+        if(member==null){
+            throw new BadRequestException("Login.Required");
+        }
+        ListData<Thesis> data = recommendInfoService.getList(member.getEmail(), recommendSearch);
         return new JSONData(data);
     }
 
