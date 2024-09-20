@@ -1,11 +1,8 @@
 package org.choongang.thesis.services;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Order;
-import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.EnumExpression;
-import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.core.types.dsl.StringExpression;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +36,7 @@ import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.springframework.data.domain.Sort.Order.asc;
 import static org.springframework.data.domain.Sort.Order.desc;
 
 @Service
@@ -313,27 +311,20 @@ public class ThesisInfoService {
         // 정렬 처리 S, -> 목록 조회 처리 추가 필요함
         String sort = search.getSort();
 
-        PathBuilder<Thesis> pathBuilder = new PathBuilder<>(Thesis.class, "thesis");
-        OrderSpecifier orderSpecifier = null;
-        Order order = Order.DESC;
+       // PathBuilder<Thesis> pathBuilder = new PathBuilder<>(Thesis.class, "thesis");
+        //OrderSpecifier orderSpecifier = null;
+
+        Sort.Order order = desc("createdAt");
         if (sort != null && StringUtils.hasText(sort.trim())) {
             //정렬항목_방향
             String[] _sort = sort.split("_");
-            if (_sort[1].toUpperCase().equals("ASC")) {
-                order = Order.ASC;
-            }
-            orderSpecifier = new OrderSpecifier(order, pathBuilder.get(_sort[0]));
+            order = _sort[1].toUpperCase().equals("ASC") ? asc(_sort[0]) : desc(_sort[0]);
+
         }
 
-        List<OrderSpecifier> orderSpecifiers = new ArrayList<>();
-        orderSpecifiers.add(thesis.title.desc());
-        if (orderSpecifier != null) {
-            orderSpecifiers.add(orderSpecifier);
-        }
-        orderSpecifiers.add(thesis.createdAt.desc());
         //정렬 처리 E
 
-        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(desc("createdAt")));
+        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(order));
 
         //데이터 조회
         Page<Thesis> data = thesisRepository.findAll(andBuilder, pageable);
