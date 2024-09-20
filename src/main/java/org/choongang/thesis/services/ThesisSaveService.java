@@ -91,7 +91,7 @@ public class ThesisSaveService {
             if (memberUtil.isLogin()) {
                 Member member = memberUtil.getMember();
                 thesis.setEmail(member.getEmail());
-                thesis.setUserName(member.getUserName());
+               thesis.setUserName(member.getUserName());
                 thesis.setApprovalStatus(ApprovalStatus.PENDING);
             }
 
@@ -104,6 +104,8 @@ public class ThesisSaveService {
             thesis.setThAbstract(form.getThAbstract());
             thesis.setReference(form.getReference());
             thesis.setVisible(form.isVisible());
+           // thesis.setUserName(form.getUserName());
+           // thesis.setEmail(form.getEmail());
 
             thesis.setToc(form.getToc());
             thesis.setLanguage(form.getLanguage());
