@@ -1,11 +1,8 @@
 package org.choongang.member.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.Transient;
 import lombok.Data;
-import org.choongang.thesis.entities.Interests;
-
-import java.util.List;
+import org.choongang.member.constants.Authority;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -25,12 +22,5 @@ public class Member {
 
     private String mobile;
 
-    private String memMajor;//전공
-
-    private String memMinor;//부전공
-
-    @Transient
-    private List<Interests> interests;
-
-    private List<Authorities> authorities;
+    private Authority authorities;
 }

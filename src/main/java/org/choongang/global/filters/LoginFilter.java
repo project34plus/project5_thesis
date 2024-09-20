@@ -11,8 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.choongang.global.Utils;
 import org.choongang.global.rests.JSONData;
 import org.choongang.member.MemberInfo;
-import org.choongang.member.constants.Authority;
-import org.choongang.member.entities.Authorities;
 import org.choongang.member.entities.Member;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.http.HttpEntity;
@@ -74,16 +72,9 @@ public class LoginFilter extends GenericFilterBean {
                 if (data != null && data.isSuccess()) {
                     String json = om.writeValueAsString(data.getData());
                     Member member = om.readValue(json, Member.class);
-                    List<Authorities> tmp = member.getAuthorities();
-                    if (tmp == null || tmp.isEmpty()) {
-                        Authorities authorities = new Authorities();
-                        authorities.setAuthority(Authority.USER);
-                        tmp = List.of(authorities);
-                    }
 
-                    List<SimpleGrantedAuthority> authorities = tmp.stream()
-                            .map(a -> new SimpleGrantedAuthority(a.getAuthority().name()))
-                            .toList();
+
+                    List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(member.getAuthorities().name()));
 
                     MemberInfo memberInfo = MemberInfo.builder()
                             .email(member.getEmail())
