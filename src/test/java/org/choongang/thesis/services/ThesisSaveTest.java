@@ -27,4 +27,8 @@ public class ThesisSaveTest {
             thesisRepository.saveAndFlush(thesis);
         }
     }
+    @Test
+    void test2(){
+        System.out.println(Category.valueOf("DOMESTIC"));
+    }
 }

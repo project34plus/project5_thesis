@@ -1,5 +1,6 @@
 package org.choongang.thesis.services;
 
+import org.choongang.thesis.entities.Interests;
 import org.choongang.thesis.repositories.FieldRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,16 +20,17 @@ public class InterestSaveTest {
     @DisplayName("관심사 저장 테스트")
     void test1() throws Exception {
         String email = "test01@test.org";
-        List<String> interests = List.of("N-004","S-005");
+        List<Interests> interests = List.of(new Interests("N-002",email));
 
-        //interestSaveService.save(interests, email);
-        //System.out.println(interests);
+        interestSaveService.save(interests, email);
+        System.out.println(interests);
     }
     @Test
     @DisplayName("관심사 수정 테스트")
     void test2() throws Exception {
-        List<String> list = List.of("N-004");
-        //interestSaveService.save(list, "test02@test.org");
-        //System.out.println(list);
+        String email = "test01@test.org";
+        List<Interests> interests = List.of(new Interests("N-005",email));
+        interestSaveService.save(interests, email);
+        System.out.println(interests);
     }
 }
