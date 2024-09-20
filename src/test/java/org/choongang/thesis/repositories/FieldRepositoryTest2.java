@@ -6,6 +6,7 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.choongang.global.rests.ApiRequest;
 import org.choongang.thesis.entities.Field;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import java.io.FileInputStream;
 public class FieldRepositoryTest2 {
     @Autowired
     FieldRepository fieldRepository;
+    @Autowired
+    private ApiRequest apiRequest;
 
     @Test
     void excelToDB() {
@@ -75,6 +78,17 @@ public class FieldRepositoryTest2 {
         } catch (Exception e) {
             e.printStackTrace();
 
+        }
+    }
+    @Test
+    void test1(){
+        System.out.println(fieldRepository.findDistinctName());
+    }
+    @Test
+    void test2(){
+        ApiRequest result = apiRequest.request("/field/mainField","thesis-service");
+        if(result.getStatus().is2xxSuccessful()){
+            System.out.println(result.getData());
         }
     }
 }

@@ -23,4 +23,7 @@ public class Member {
     private String mobile;
 
     private Authority authorities;
+
+    private String memMajor;
+    private String memMinor;
 }

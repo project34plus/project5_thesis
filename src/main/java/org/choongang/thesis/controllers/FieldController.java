@@ -10,22 +10,28 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-@Tag(name="field",description = "학문 분류 코드 관련 API")
+
+@Tag(name = "field", description = "학문 분류 코드 관련 API")
 @RequestMapping("/field")
 @RestController
 @RequiredArgsConstructor
 public class FieldController {
-
-
     private final FieldRepository fieldRepository;
 
-    @Operation(summary = "필드 목록 불러오기",method = "GET")
+    @Operation(summary = "필드 목록 불러오기", method = "GET")
     @ApiResponse(responseCode = "200")
     @GetMapping("/list")
     @PreAuthorize("permitAll()")
     public JSONData getFieldList() {
 
         return new JSONData(fieldRepository.findAll());
+    }
+
+    @Operation(summary = "필드 대분류 가져오기", method = "GET")
+    @ApiResponse(responseCode = "200")
+    @GetMapping("/mainField")
+    public JSONData getMainField() {
+        return new JSONData(fieldRepository.findDistinctName());
     }
 
 
