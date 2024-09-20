@@ -68,12 +68,21 @@ public class Utils { // 빈의 이름 - utils
 
         return messages.isEmpty() ? code : messages.get(0);
     }
-
     public String url(String url, String serviceId) {
+        List<ServiceInstance> instances = discoveryClient.getInstances(serviceId);
+
+        try {
+            return String.format("%s%s", instances.get(0).getUri().toString(), url);
+        } catch (Exception e) {
+            return String.format("%s://%s:%d%s%s", request.getScheme(), request.getServerName(), request.getServerPort(), request.getContextPath(), url);
+        }
+    }
+
+/*    public String url(String url, String serviceId) {
         List<ServiceInstance> instances = discoveryClient.getInstances(serviceId);
         System.out.println("instances:" + instances);
         return String.format("%s%s", instances.get(0).getUri().toString(), url);
-    }
+    }*/
 
     /**
      * 요청 받은 JWT 토큰 조회
