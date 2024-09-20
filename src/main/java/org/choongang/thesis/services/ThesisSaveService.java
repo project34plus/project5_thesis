@@ -109,10 +109,6 @@ public class ThesisSaveService {
             thesis.setLanguage(form.getLanguage());
             thesis.setCountry(form.getCountry());
 
-            // 사용자명과 이메일 설정
-            thesis.setUserName(form.getUserName());
-            thesis.setEmail(form.getEmail());
-
             /* fields 항목 처리 */
             List<String> ids = form.getFields();
             List<Field> fields = null;
