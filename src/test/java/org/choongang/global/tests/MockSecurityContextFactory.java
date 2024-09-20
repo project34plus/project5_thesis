@@ -1,7 +1,6 @@
 package org.choongang.global.tests;
 
 import org.choongang.member.MemberInfo;
-import org.choongang.member.entities.Authorities;
 import org.choongang.member.entities.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,9 +30,7 @@ public class MockSecurityContextFactory implements WithSecurityContextFactory<Mo
         member.setJob(mockMember.job());
         member.setMobile(mockMember.mobile());
 
-        Authorities authorities = new Authorities();
-        authorities.setAuthority(mockMember.authority());
-        member.setAuthorities(mockMember.authority());
+
 
         List<SimpleGrantedAuthority> _authorities = List.of(new SimpleGrantedAuthority(mockMember.authority().name()));
 
