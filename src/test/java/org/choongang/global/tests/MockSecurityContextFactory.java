@@ -30,8 +30,6 @@ public class MockSecurityContextFactory implements WithSecurityContextFactory<Mo
         member.setJob(mockMember.job());
         member.setMobile(mockMember.mobile());
 
-
-
         List<SimpleGrantedAuthority> _authorities = List.of(new SimpleGrantedAuthority(mockMember.authority().name()));
 
         MemberInfo memberInfo = MemberInfo.builder()
