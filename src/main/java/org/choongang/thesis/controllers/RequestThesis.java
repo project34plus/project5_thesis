@@ -60,6 +60,7 @@ public class RequestThesis {
     private String rejectedReason;
 
     private String userName;
+
     private String email;
 
 
