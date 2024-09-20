@@ -87,9 +87,12 @@ public class ThesisSaveService {
         } else { // 추가
             thesis = new Thesis();
             thesis.setGid(form.getGid());
-
+            System.out.println("장성준2222");
             if (memberUtil.isLogin()) {
+                System.out.println("여기1");
+                System.out.println("장성준!");
                 Member member = memberUtil.getMember();
+                System.out.println("member:" + member);
                 thesis.setEmail(member.getEmail());
                thesis.setUserName(member.getUserName());
                 thesis.setApprovalStatus(ApprovalStatus.PENDING);
@@ -102,10 +105,17 @@ public class ThesisSaveService {
             thesis.setTitle(form.getTitle());
             thesis.setContributor(form.getContributor());
             thesis.setThAbstract(form.getThAbstract());
+
+
+//            thesis.setEmail(form.getEmail());
+//            thesis.setUserName(form.getUserName());
+
+
             thesis.setReference(form.getReference());
             thesis.setVisible(form.isVisible());
            // thesis.setUserName(form.getUserName());
            // thesis.setEmail(form.getEmail());
+
 
             thesis.setToc(form.getToc());
             thesis.setLanguage(form.getLanguage());
