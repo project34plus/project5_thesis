@@ -96,6 +96,10 @@ public class ThesisInfoService {
         LocalDate sDate = search.getSDate(); //검색 시작일
         LocalDate eDate = search.getEDate(); //검색 종료일
 
+        if (sDate != null && eDate != null && sDate.isAfter(eDate)) {
+            throw new IllegalArgumentException("검색 시작일은 종료일보다 늦을 수 없습니다");
+        }
+
         List<String> category = search.getCategory(); //카테고리
         List<String> fields = search.getFields(); //분류명
         List<String> email = search.getEmail(); //작성한 회원 이메일
