@@ -94,7 +94,7 @@ public class ThesisSaveService {
                 Member member = memberUtil.getMember();
                 System.out.println("member:" + member);
                 thesis.setEmail(member.getEmail());
-                thesis.setUserName(member.getUserName());
+               thesis.setUserName(member.getUserName());
                 thesis.setApprovalStatus(ApprovalStatus.PENDING);
             }
 
@@ -113,6 +113,8 @@ public class ThesisSaveService {
 
             thesis.setReference(form.getReference());
             thesis.setVisible(form.isVisible());
+           // thesis.setUserName(form.getUserName());
+           // thesis.setEmail(form.getEmail());
 
 
             thesis.setToc(form.getToc());

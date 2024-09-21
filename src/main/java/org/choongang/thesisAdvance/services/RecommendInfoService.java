@@ -54,6 +54,7 @@ public class RecommendInfoService {
         //소속 분야
         try {
             ApiRequest result = apiRequest.request("/account", "member-service", HttpMethod.GET);
+            System.out.println(result.getData());
             if (!result.getStatus().is2xxSuccessful()) {
                 throw new BadRequestException("회원 정보 불러오기 실패");
             }

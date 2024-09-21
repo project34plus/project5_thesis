@@ -56,7 +56,11 @@ public class ApiRequest {
         } else { // GET 또는 DELETE 방식인 경우
 
             HttpEntity<Void> request = new HttpEntity<>(headers);
-            this.response = restTemplate.exchange(URI.create(requestUrl), method, request, JSONData.class);
+            try {
+                this.response = restTemplate.exchange(URI.create(requestUrl), method, request, JSONData.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         if (this.response != null) {
