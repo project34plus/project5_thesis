@@ -99,7 +99,6 @@ public class ThesisInfoService {
         List<String> category = search.getCategory(); //카테고리
         List<String> fields = search.getFields(); //분류명
         List<String> email = search.getEmail(); //작성한 회원 이메일
-        String fieldFilter = search.getFieldFilter(); // 분류 한정
 
         String title = search.getTitle(); //제목
         String poster = search.getPoster(); //저자
