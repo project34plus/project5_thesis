@@ -33,6 +33,7 @@ public class RecommendController {
     @PreAuthorize("permitAll()")
     public JSONData list(@ModelAttribute RecommendSearch recommendSearch) {
         Member member = memberUtil.getMember();
+        System.out.println(member);
         if(member==null){
             throw new BadRequestException("Login.Required");
         }
