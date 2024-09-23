@@ -19,6 +19,7 @@ import org.choongang.thesis.services.ThesisInfoService;
 import org.choongang.thesisAdvance.controllers.RecommendSearch;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -73,6 +74,10 @@ public class RecommendInfoService {
         String sort = "viewCount_DESC";
         search.setSort(sort);
 
+        if (StringUtils.hasText(search.getFieldFilter())) {
+            ids.clear();
+            ids.add(search.getFieldFilter());
+        }
         search.setFields(ids);
         //찜한 리스트에서
 
