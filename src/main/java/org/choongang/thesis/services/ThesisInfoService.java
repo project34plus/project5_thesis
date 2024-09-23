@@ -21,6 +21,7 @@ import org.choongang.thesis.entities.Thesis;
 import org.choongang.thesis.exceptions.ThesisNotFoundException;
 import org.choongang.thesis.repositories.FieldRepository;
 import org.choongang.thesis.repositories.ThesisRepository;
+import org.choongang.thesisAdvance.controllers.RecommendSearch;
 import org.choongang.thesisAdvance.services.UserLogService;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -191,6 +192,14 @@ public class ThesisInfoService {
         //field 검색
         if (fields != null && !fields.isEmpty()) {
             fieldRepository.findByIdIn(fields).forEach(i -> andBuilder.or(thesis.fields.contains(i)));
+        }
+        if (search instanceof RecommendSearch) {
+            String fieldFilter = ((RecommendSearch) search).getFieldFilter();
+            BooleanBuilder orBuilder = new BooleanBuilder();
+            if (StringUtils.hasText(fieldFilter)) {
+                fieldRepository.findByName(fieldFilter).forEach(i -> orBuilder.or(thesis.fields.contains(i)));
+            }
+            andBuilder.and(orBuilder);
         }
 
         //논문 등록일 검색

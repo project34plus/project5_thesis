@@ -19,7 +19,6 @@ import org.choongang.thesis.services.ThesisInfoService;
 import org.choongang.thesisAdvance.controllers.RecommendSearch;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -61,10 +60,10 @@ public class RecommendInfoService {
             }
             Member member = result.toObj(Member.class);
             if (member.getMemMajor() != null) {
-                ids.add(member.getMemMajor());
+                ids.addAll(fieldRepository.findIdByName(member.getMemMajor()));
             }
             if (member.getMemMinor() != null) {
-                ids.add(member.getMemMinor());
+                ids.addAll(fieldRepository.findIdByName(member.getMemMinor()));
             }
         } catch (BadRequestException e) {
             e.printStackTrace();
@@ -73,13 +72,14 @@ public class RecommendInfoService {
 
         String sort = "viewCount_DESC";
         search.setSort(sort);
-
-        if (StringUtils.hasText(search.getFieldFilter())) {
+        /*if (StringUtils.hasText(search.getFieldFilter())) {
             ids.clear();
-            ids.add(search.getFieldFilter());
-        }
+            ids.addAll(fieldRepository.findIdByName(search.getFieldFilter()));
+        }*/
         search.setFields(ids);
         //찜한 리스트에서
+
+        //키워드
 
         return thesisInfoService.getList(search);
     }
