@@ -346,10 +346,36 @@ public class ThesisInfoService {
         if (!memberUtil.isLogin()) {
             return new ListData<>();
         }
-        String email = memberUtil.getMember().getEmail();
-        search.setEmail(List.of(email));
-        return getList(search);
+
+        // 현재 로그인한 사용자의 이메일 가져오기
+        String userEmail = memberUtil.getMember().getEmail();
+
+        // 로그인한 사용자가 작성한 논문만 필터링 (승인 상태와 상관없이 조회)
+        BooleanBuilder andBuilder = new BooleanBuilder();
+        QThesis thesis = QThesis.thesis;
+        andBuilder.and(thesis.email.eq(userEmail));
+
+        // 기본적으로 페이지네이션 처리 (필요 없으면 제거 가능)
+        int page = Math.max(search.getPage(), 1);
+        int limit = search.getLimit();
+        limit = limit < 1 ? 20 : limit;
+
+        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Order.desc("createdAt")));
+
+        // 논문 목록 조회
+        Page<Thesis> data = thesisRepository.findAll(andBuilder, pageable);
+
+        // 페이지네이션 정보
+        Pagination pagination = new Pagination(page, (int) data.getTotalElements(), 10, limit, request);
+
+        // 추가 정보 설정 및 반환
+        List<Thesis> items = data.getContent();
+        items.forEach(this::addInfo);
+
+        return new ListData<>(items, pagination);
     }
+
+
 
     /**
      * 내가 찜한 논문 목록
