@@ -34,6 +34,8 @@ public class RequestThesis {
 
     private String thAbstract; // 초록
 
+    private String keywords; // 키워드
+
     private String reference; // 참고 문헌
 
 
@@ -43,6 +45,7 @@ public class RequestThesis {
 
     private  boolean approval; //승인여부
 
+    @NotBlank
     private String publisher; // 발행기관
 
     private String toc; // 목차
