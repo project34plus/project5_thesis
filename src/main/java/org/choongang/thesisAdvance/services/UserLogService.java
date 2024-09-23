@@ -6,9 +6,11 @@ import org.choongang.member.MemberUtil;
 import org.choongang.member.entities.Member;
 import org.choongang.thesis.entities.Thesis;
 import org.choongang.thesis.entities.UserLog;
+import org.choongang.thesis.entities.VisitHistory;
 import org.choongang.thesis.exceptions.ThesisNotFoundException;
 import org.choongang.thesis.repositories.ThesisRepository;
 import org.choongang.thesis.repositories.UserLogRepository;
+import org.choongang.thesis.repositories.VisitHistoryRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,7 @@ public class UserLogService {
     private final MemberUtil memberUtil;
     private final UserLogRepository userLogRepository;
     private final ThesisRepository thesisRepository;
+    private final VisitHistoryRepository visitHistoryRepository;
     private JPAQueryFactory queryFactory;
 
     /**
@@ -70,12 +73,12 @@ public class UserLogService {
 //            return;
 //        }
         try {
-            UserLog userLog = UserLog.builder()
+            VisitHistory visitHistory = VisitHistory.builder()
 //                    .email(memberUtil.getMember().getEmail())
                     .email(SecurityContextHolder.getContext().getAuthentication().getName())
                     .thesis(thesisRepository.findById(tid).orElseThrow(ThesisNotFoundException::new))
                     .build();
-            userLogRepository.saveAndFlush(userLog);
+            visitHistoryRepository.saveAndFlush(visitHistory);
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("논문 조회 기록 실패");
@@ -83,7 +86,7 @@ public class UserLogService {
     }
 
     public List<Thesis> getRecentlyViewedTheses(String email) {
-        List<UserLog> logs = userLogRepository.findByEmailOrderBySearchDateDesc(email);
+        List<VisitHistory> logs = visitHistoryRepository.findByEmailOrderBySearchDateDesc(email);
         List<Long> tids = logs.stream().map(log -> log.getThesis().getTid()).collect(Collectors.toList());
         return thesisRepository.findAllById(tids);
 
