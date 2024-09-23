@@ -87,9 +87,7 @@ public class TrendInfoService {
             return null;
         }
 
-        List<String> fieldIds = items.stream().filter(Objects::nonNull).flatMap(s ->
-                Arrays.stream(s.get(daily.fields).split(","))
-        ).distinct().toList();
+        List<String> fieldIds = items.stream().flatMap(s -> Arrays.stream(s.get(daily.fields).split(","))).distinct().toList();
 
         QField field = QField.field;
         List<Field> fields = (List<Field>) fieldRepository.findAll(field.id.in(fieldIds));
@@ -103,34 +101,29 @@ public class TrendInfoService {
         }));
 
         for (Tuple item : items) {
-            if (item != null) {
-                for (String name : item.get(daily.fields).split(",")) {
-                    Map<String, Object> data = statData.get(name);
-                    if (data == null) {
-                        data = new HashMap<>();
-                        data.put("count", 1);
-                    } else {
-                        int count = (int) data.getOrDefault("count", 0);
-                        data.put("count", count + 1);
-                    }
-                    statData.put(name, data); // 통계 데이터 쌓기
+            for (String name : item.get(daily.fields).split(",")) {
+                Map<String, Object> data = statData.get(name);
+                if (data == null) {
+                    data = new HashMap<>();
+                    data.put("count", 1);
+                } else {
+                    int count = (int) data.getOrDefault("count", 0);
+                    data.put("count", count + 1);
                 }
+                statData.put(name, data); // 통계 데이터 쌓기
             }
         }
 
         /* 찜하기 데이터 처리 S */
         Map<String, Long> wishCounts = new HashMap<>();
         for (Tuple item : items) {
-            if (item != null) {
-                Long tid = item.get(daily.tid);
-                String _fields = item.get(daily.fields);
-                long count = wishListService.getCount(tid);
-                for (String _field : _fields.split(",")) {
-                    long _count = wishCounts.getOrDefault(_field, 0L);
-                    wishCounts.put(_field, _count + count);
-                }
+            Long tid = item.get(daily.tid);
+            String _fields = item.get(daily.fields);
+            long count = wishListService.getCount(tid);
+            for (String _field : _fields.split(",")) {
+                long _count = wishCounts.getOrDefault(_field, 0L);
+                wishCounts.put(_field, _count + count);
             }
-
         }
 
         //statData 에 찜하기 데이터 추가 처리
