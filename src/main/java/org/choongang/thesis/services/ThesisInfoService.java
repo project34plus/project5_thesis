@@ -244,7 +244,9 @@ public class ThesisInfoService {
 
         if (sopts != null && !sopts.isEmpty()) {
             List<Map<String, BooleanExpression>> data = new ArrayList<>();
+//            System.out.println(sopts);
             for (int i = 0; i < sopts.size(); i++) {
+                System.out.println(sopts);
                 String _sopt = sopts.get(i);
                 String _skey = skeys.get(i);
                 String operator = operators.get(i);
@@ -252,7 +254,16 @@ public class ThesisInfoService {
                 if (!StringUtils.hasText(_sopt) || !StringUtils.hasText(_skey)) continue;
 
                 StringExpression expression = null;
-                if (_sopt.equals("poster")) {
+                if (sopt.equals("ALL")) { // 통합 검색
+                    expression = thesis.title
+                            .concat(String.valueOf(thesis.category))
+                            .concat(String.valueOf(thesis.fields))
+                            .concat(thesis.poster)
+                            .concat(thesis.thAbstract)
+                            .concat(thesis.publisher)
+                            .concat(thesis.language)
+                            .concat(thesis.country);
+                }else if (_sopt.equals("poster")) {
                     expression = thesis.poster;
                 } else if (_sopt.equals("title")) {
                     expression = thesis.title;
@@ -272,7 +283,7 @@ public class ThesisInfoService {
                 data.add(c);
             }
 
-            System.out.println("data: " + data);
+//            System.out.println("data: " + data);
             String prevOperator = "";
             BooleanBuilder orBuilder = new BooleanBuilder();
             int i = 0;

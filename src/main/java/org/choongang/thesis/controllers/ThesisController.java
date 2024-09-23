@@ -54,10 +54,10 @@ public class ThesisController {
     @ApiResponse(responseCode = "201")
     @Parameters({
             @Parameter(name = "tid", required = true, description = "경로변수, 논문 등록번호", example = "100"),
-            @Parameter(name = "action", required = true, description = "수정 또는 재제출",example = "submit or resubmit")
+            @Parameter(name = "action", required = true, description = "수정 또는 재제출", example = "submit or resubmit")
     })
     @PatchMapping("/update/{tid}/{action}")
-    public ResponseEntity<Void> update(@PathVariable("tid") Long tid,@PathVariable("action") String action,@Valid @RequestBody RequestThesis form, Errors errors) {
+    public ResponseEntity<Void> update(@PathVariable("tid") Long tid, @PathVariable("action") String action, @Valid @RequestBody RequestThesis form, Errors errors) {
         form.setActionType(action);
         form.setMode("update");
         form.setTid(tid);
@@ -112,7 +112,14 @@ public class ThesisController {
     @PreAuthorize("permitAll()")
     public JSONData list(@ModelAttribute ThesisSearch search) {
         ListData<Thesis> data = thesisInfoService.getList(search);
+        System.out.println(search);
+        if (search.getSkey() != null) {
+            userLogService.save(search.getSkey());
+        }
 
+        if (search.getSkeys() != null) {
+            search.getSkeys().forEach(userLogService::save);
+        }
         return new JSONData(data);
     }
 
