@@ -107,18 +107,14 @@ public class ThesisSaveService {
             thesis.setTitle(form.getTitle());
             thesis.setContributor(form.getContributor());
             thesis.setThAbstract(form.getThAbstract());
+            thesis.setPublisher(form.getPublisher());
+            thesis.setKeywords(form.getKeywords());
 
 
 //            thesis.setEmail(form.getEmail());
 //            thesis.setUserName(form.getUserName());
-
-
             thesis.setReference(form.getReference());
             thesis.setVisible(form.isVisible());
-           // thesis.setUserName(form.getUserName());
-           // thesis.setEmail(form.getEmail());
-
-
             thesis.setToc(form.getToc());
             thesis.setLanguage(form.getLanguage());
             thesis.setCountry(form.getCountry());
