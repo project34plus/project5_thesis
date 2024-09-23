@@ -197,10 +197,10 @@ public class ThesisInfoService {
             fieldRepository.findByIdIn(fields).forEach(i -> andBuilder.or(thesis.fields.contains(i)));
         }
 
-            //논문 등록일 검색
-            if (sDate != null) { //검색 시작일
-                andBuilder.and(thesis.createdAt.goe(sDate.atTime(LocalTime.MIN)));
-            }
+        //논문 등록일 검색
+        if (sDate != null) { //검색 시작일
+            andBuilder.and(thesis.createdAt.goe(sDate.atTime(LocalTime.MIN)));
+        }
         if (eDate != null) { //검색 종료일
             andBuilder.and(thesis.createdAt.loe(eDate.atTime(LocalTime.MAX)));
         }
@@ -378,7 +378,6 @@ public class ThesisInfoService {
 
         return new ListData<>(items, pagination);
     }
-
 
 
     /**
