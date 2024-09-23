@@ -41,7 +41,7 @@ public class TrendController {
     public JSONData getFieldRanking(@ModelAttribute TrendSearch search){
         Map<String, Map<String, Object>> data = trendInfoService.getFieldRanking(search);
 
-        System.out.printf("isLogin: %s, isAdmin: %s, member: %s%n", memberUtil.isLogin(), memberUtil.isAdmin(), memberUtil.getMember());
+        //System.out.printf("isLogin: %s, isAdmin: %s, member: %s%n", memberUtil.isLogin(), memberUtil.isAdmin(), memberUtil.getMember());
 
         return new JSONData(data);
     }
