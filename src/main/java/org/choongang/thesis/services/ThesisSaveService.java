@@ -56,8 +56,10 @@ public class ThesisSaveService {
             thesis.setTitle(form.getTitle());
             thesis.setContributor(form.getContributor());
             thesis.setThAbstract(form.getThAbstract());
+            thesis.setPublisher(form.getPublisher());
             thesis.setReference(form.getReference());
             thesis.setVisible(form.isVisible());
+            thesis.setKeywords(form.getKeywords());
 
             if (memberUtil.isAdmin()) {
                 thesis.setApprovalStatus(form.getApprovalStatus()); // 관리자가 승인 상태를 변경할 수 있음
