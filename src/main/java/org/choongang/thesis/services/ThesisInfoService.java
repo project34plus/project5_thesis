@@ -197,10 +197,10 @@ public class ThesisInfoService {
             fieldRepository.findByIdIn(fields).forEach(i -> andBuilder.or(thesis.fields.contains(i)));
         }
 
-        //논문 등록일 검색
-        if (sDate != null) { //검색 시작일
-            andBuilder.and(thesis.createdAt.goe(sDate.atTime(LocalTime.MIN)));
-        }
+            //논문 등록일 검색
+            if (sDate != null) { //검색 시작일
+                andBuilder.and(thesis.createdAt.goe(sDate.atTime(LocalTime.MIN)));
+            }
         if (eDate != null) { //검색 종료일
             andBuilder.and(thesis.createdAt.loe(eDate.atTime(LocalTime.MAX)));
         }
@@ -276,7 +276,7 @@ public class ThesisInfoService {
                     String operator = entry.getKey();
                     BooleanExpression condition = entry.getValue();
                     if (prevOperator.equals("OR") && !operator.equals("OR")) {
-                        andBuilder.and(orBuilder); 
+                        andBuilder.and(orBuilder);
 
                         orBuilder = new BooleanBuilder();
                     }
@@ -305,7 +305,7 @@ public class ThesisInfoService {
                     i++;
                 }
             }
-            if (prevOperator.equals("OR")) { 
+            if (prevOperator.equals("OR")) {
                 //마지막이 or로 끝나면 한번더 and 빌더에 추가
                 andBuilder.and(orBuilder);
             }
@@ -315,7 +315,7 @@ public class ThesisInfoService {
         // 정렬 처리 S, -> 목록 조회 처리 추가 필요함
         String sort = search.getSort();
 
-       // PathBuilder<Thesis> pathBuilder = new PathBuilder<>(Thesis.class, "thesis");
+        // PathBuilder<Thesis> pathBuilder = new PathBuilder<>(Thesis.class, "thesis");
         //OrderSpecifier orderSpecifier = null;
 
         Sort.Order order = desc("createdAt");
