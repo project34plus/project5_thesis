@@ -48,7 +48,7 @@ public class RecommendInfoService {
         /*회원별 카테고리, 관심분야 처리 E*/
 
         /*회원별 조회한 논문의 분야 불러오기*/
-        getThesisFieldFromUserLog(email).forEach(i -> {
+        getThesisFieldFromVisitHistory(email).forEach(i -> {
             Field field = fieldRepository.findById(i[1].toString()).orElseThrow(FieldNotFoundException::new);
             ids.add(field.getId());
         });
@@ -84,8 +84,8 @@ public class RecommendInfoService {
         return thesisInfoService.getList(search);
     }
 
-    private List<Object[]> getThesisFieldFromUserLog(String email) {
-        String sql = "SELECT * FROM THESIS_FIELDS tf WHERE THESES_TID IN (SELECT ul.tid FROM USER_LOG ul WHERE ul.email = :email GROUP BY ul.tid ) ORDER BY ( SELECT COUNT(ul.tid) FROM USER_LOG ul WHERE ul.tid = tf.THESES_TID) DESC";
+    private List<Object[]> getThesisFieldFromVisitHistory(String email) {
+        String sql = "SELECT * FROM THESIS_FIELDS tf WHERE THESES_TID IN (SELECT vh.tid FROM VISIT_HISTORY vh WHERE vh.email = :email GROUP BY vh.tid ) ORDER BY ( SELECT COUNT(vh.tid) FROM VISIT_HISTORY vh WHERE vh.tid = tf.THESES_TID) DESC";
         return em.createNativeQuery(sql)
                 .setParameter("email", email)
                 .getResultList();

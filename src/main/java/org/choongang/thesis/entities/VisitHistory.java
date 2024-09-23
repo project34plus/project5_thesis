@@ -1,6 +1,6 @@
 package org.choongang.thesis.entities;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,27 +18,20 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class UserLog {
-    @Id @GeneratedValue
-    private Long logSeq;
-
-/*
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="tid")
-    @JsonIgnore
-    private Thesis thesis;
-*/
+public class VisitHistory {
+    @Id
+    @GeneratedValue
+    private Long seq;
 
     @CreatedBy
     @Column(length=80, nullable = false)
     private String email;
 
-    @Column(length=10, nullable = false)
-    private String job; // 검색시 직업도 추가!
-
-    @Column(length=80)
-    private String search; // 검색어
-
     @CreatedDate
     private LocalDateTime searchDate; // 검색일
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="tid")
+    @JsonIgnore
+    private Thesis thesis;
 }
