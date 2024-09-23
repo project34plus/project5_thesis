@@ -21,6 +21,7 @@ import org.choongang.thesis.entities.Thesis;
 import org.choongang.thesis.exceptions.ThesisNotFoundException;
 import org.choongang.thesis.repositories.FieldRepository;
 import org.choongang.thesis.repositories.ThesisRepository;
+import org.choongang.thesisAdvance.controllers.RecommendSearch;
 import org.choongang.thesisAdvance.services.UserLogService;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -196,6 +197,14 @@ public class ThesisInfoService {
         if (fields != null && !fields.isEmpty()) {
             fieldRepository.findByIdIn(fields).forEach(i -> andBuilder.or(thesis.fields.contains(i)));
         }
+        if (search instanceof RecommendSearch) {
+            String fieldFilter = ((RecommendSearch) search).getFieldFilter();
+            BooleanBuilder orBuilder = new BooleanBuilder();
+            if (StringUtils.hasText(fieldFilter)) {
+                fieldRepository.findByName(fieldFilter).forEach(i -> orBuilder.or(thesis.fields.contains(i)));
+            }
+            andBuilder.and(orBuilder);
+        }
 
         //논문 등록일 검색
         if (sDate != null) { //검색 시작일
@@ -239,7 +248,9 @@ public class ThesisInfoService {
 
         if (sopts != null && !sopts.isEmpty()) {
             List<Map<String, BooleanExpression>> data = new ArrayList<>();
+//            System.out.println(sopts);
             for (int i = 0; i < sopts.size(); i++) {
+                System.out.println(sopts);
                 String _sopt = sopts.get(i);
                 String _skey = skeys.get(i);
                 String operator = operators.get(i);
@@ -247,7 +258,16 @@ public class ThesisInfoService {
                 if (!StringUtils.hasText(_sopt) || !StringUtils.hasText(_skey)) continue;
 
                 StringExpression expression = null;
-                if (_sopt.equals("poster")) {
+                if (sopt.equals("ALL")) { // 통합 검색
+                    expression = thesis.title
+                            .concat(String.valueOf(thesis.category))
+                            .concat(String.valueOf(thesis.fields))
+                            .concat(thesis.poster)
+                            .concat(thesis.thAbstract)
+                            .concat(thesis.publisher)
+                            .concat(thesis.language)
+                            .concat(thesis.country);
+                }else if (_sopt.equals("poster")) {
                     expression = thesis.poster;
                 } else if (_sopt.equals("title")) {
                     expression = thesis.title;
@@ -267,7 +287,7 @@ public class ThesisInfoService {
                 data.add(c);
             }
 
-            System.out.println("data: " + data);
+//            System.out.println("data: " + data);
             String prevOperator = "";
             BooleanBuilder orBuilder = new BooleanBuilder();
             int i = 0;

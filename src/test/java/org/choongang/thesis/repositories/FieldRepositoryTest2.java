@@ -48,13 +48,13 @@ public class FieldRepositoryTest2 {
                     String _subfield; // 중분류
                     String _id; // 학문별 분류 코드
 
-                    if (cell!=null && cell.getCellType() != CellType.BLANK) {
+                    if (cell != null && cell.getCellType() != CellType.BLANK) {
                         _name = cell.getStringCellValue();
                     } else {
                         _name = "미분류";
                     }
 
-                    if (cell!=null && cell1.getCellType() != CellType.BLANK){
+                    if (cell != null && cell1.getCellType() != CellType.BLANK) {
                         _subfield = cell1.getStringCellValue();
                     } else {
                         _subfield = "미분류";
@@ -80,15 +80,22 @@ public class FieldRepositoryTest2 {
 
         }
     }
+
     @Test
-    void test1(){
+    void test1() {
         System.out.println(fieldRepository.findDistinctName());
     }
+
     @Test
-    void test2(){
-        ApiRequest result = apiRequest.request("/field/mainField","thesis-service");
-        if(result.getStatus().is2xxSuccessful()){
+    void test2() {
+        ApiRequest result = apiRequest.request("/field/mainField", "thesis-service");
+        if (result.getStatus().is2xxSuccessful()) {
             System.out.println(result.getData());
         }
+    }
+
+    @Test
+    void test3() {
+        System.out.println(fieldRepository.findIdByName("공학"));
     }
 }

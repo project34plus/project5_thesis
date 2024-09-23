@@ -13,6 +13,7 @@ import org.choongang.thesis.repositories.UserLogRepository;
 import org.choongang.thesis.repositories.VisitHistoryRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,14 +45,14 @@ public class UserLogService {
      * @param keyword
      */
     public void save(String keyword) {
-/*        if (!memberUtil.isLogin() || !StringUtils.hasText(keyword.trim())) {
+        if (!memberUtil.isLogin() || !StringUtils.hasText(keyword.trim())) {
             return;
-        }*/
+        }
         try {
             Member member = memberUtil.getMember();
             UserLog userLog = UserLog.builder()
 //                    .email(memberUtil.getMember().getEmail())
-//                    .email(SecurityContextHolder.getContext().getAuthentication().getName())
+                    .email(SecurityContextHolder.getContext().getAuthentication().getName())
                     .job(member.getJob())
                     .search(keyword)
                     .build();
