@@ -12,7 +12,7 @@ public class RequestComment {
     private Long tid; // 논문 번호
 
     @NotBlank
-    private String username; // 작성자=회원명
+    private String userName; // 작성자=회원명
 
     @NotBlank
     private String content; // 댓글 내용
