@@ -74,13 +74,13 @@ public class ThesisSaveService {
             thesis.setLanguage(form.getLanguage());
             thesis.setCountry(form.getCountry());
 
-            /* fields 항목 처리 */
-            List<String> ids = form.getFields();
-            List<Field> fields = null;
-            if (ids != null && !ids.isEmpty()) {
-                fields = fieldRepository.findAllById(ids);
-            }
-            thesis.setFields(fields);
+//            /* fields 항목 처리 */
+//            List<String> ids = form.getFields();
+//            List<Field> fields = null;
+//            if (ids != null && !ids.isEmpty()) {
+//                fields = fieldRepository.findAllById(ids);
+//            }
+//            thesis.setFields(fields);
             /* 필드 수정 처리 E */
 
             // thesis를 저장 후 버전 관리
@@ -89,10 +89,7 @@ public class ThesisSaveService {
         } else { // 추가
             thesis = new Thesis();
             thesis.setGid(form.getGid());
-            System.out.println("장성준2222");
             if (memberUtil.isLogin()) {
-                System.out.println("여기1");
-                System.out.println("장성준!");
                 Member member = memberUtil.getMember();
                 System.out.println("member:" + member);
                 thesis.setEmail(member.getEmail());
