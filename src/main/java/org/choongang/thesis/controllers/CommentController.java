@@ -70,7 +70,7 @@ public class CommentController {
     @Operation(summary = "댓글 목록", method = "GET", description = "댓글 모두 조회")
     @ApiResponse(responseCode = "200")
     @Parameters({
-            @Parameter(name = "seq", description = "경로변수, 댓글 번호", example = "100")
+            @Parameter(name = "seq", description = "경로변수, 논문 번호", example = "100")
     })
     @GetMapping("/list/{seq}") // 댓글 목록
     public JSONData getList(@PathVariable("seq") Long seq) {
