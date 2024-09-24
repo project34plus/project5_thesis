@@ -22,6 +22,8 @@ public class FieldRepositoryTest2 {
     FieldRepository fieldRepository;
     @Autowired
     private ApiRequest apiRequest;
+    @Autowired
+    private UserLogRepository userLogRepository;
 
     @Test
     void excelToDB() {
@@ -96,6 +98,6 @@ public class FieldRepositoryTest2 {
 
     @Test
     void test3() {
-        System.out.println(fieldRepository.findIdByName("공학"));
+        System.out.println(userLogRepository.findDistinctSearchByEmail("test@test.org"));
     }
 }

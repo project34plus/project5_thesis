@@ -193,13 +193,21 @@ public class ThesisInfoService {
         if (fields != null && !fields.isEmpty()) {
             fieldRepository.findByIdIn(fields).forEach(i -> andBuilder.or(thesis.fields.contains(i)));
         }
-        if (search instanceof RecommendSearch) {
+        if (search instanceof RecommendSearch) {//추천서비스
+
             String fieldFilter = ((RecommendSearch) search).getFieldFilter();
             BooleanBuilder orBuilder = new BooleanBuilder();
+            BooleanBuilder orBuilder2 = new BooleanBuilder();
             if (StringUtils.hasText(fieldFilter)) {
                 fieldRepository.findByName(fieldFilter).forEach(i -> orBuilder.or(thesis.fields.contains(i)));
             }
+            List<String> searchLog = ((RecommendSearch) search).getSearchLog();
+            if (!searchLog.isEmpty()) {
+                searchLog.forEach(i -> orBuilder2.or(thesis.keywords.contains(i)));
+            }
+
             andBuilder.and(orBuilder);
+            andBuilder.or(orBuilder2);
         }
 
         //논문 등록일 검색
@@ -263,7 +271,7 @@ public class ThesisInfoService {
                             .concat(thesis.publisher)
                             .concat(thesis.language)
                             .concat(thesis.country);
-                }else if (_sopt.equals("poster")) {
+                } else if (_sopt.equals("poster")) {
                     expression = thesis.poster;
                 } else if (_sopt.equals("title")) {
                     expression = thesis.title;

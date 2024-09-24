@@ -15,6 +15,7 @@ import org.choongang.thesis.exceptions.FieldNotFoundException;
 import org.choongang.thesis.repositories.FieldRepository;
 import org.choongang.thesis.repositories.InterestsRepository;
 import org.choongang.thesis.repositories.ThesisRepository;
+import org.choongang.thesis.repositories.UserLogRepository;
 import org.choongang.thesis.services.ThesisInfoService;
 import org.choongang.thesisAdvance.controllers.RecommendSearch;
 import org.springframework.http.HttpMethod;
@@ -34,6 +35,7 @@ public class RecommendInfoService {
     private final Utils utils;
     private final FileInfoService fileInfoService;
     private final ThesisInfoService thesisInfoService;
+    private final UserLogRepository userLogRepository;
 
     /**
      * 추천 논문 목록
@@ -80,6 +82,8 @@ public class RecommendInfoService {
         //찜한 리스트에서
 
         //키워드
+        List<String> searchKeywordList = userLogRepository.findDistinctSearchByEmail(email);
+        search.setSearchLog(searchKeywordList);
 
         return thesisInfoService.getList(search);
     }
