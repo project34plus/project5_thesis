@@ -53,7 +53,7 @@ public class CommentSaveService {
             data.setUa(request.getHeader("User-Agent"));
         }
 
-        String commenter = form.getUsername();
+        String commenter = form.getUserName();
         if (StringUtils.hasText(commenter)) {
             data.setUsername(commenter);
         }

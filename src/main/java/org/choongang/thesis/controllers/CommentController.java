@@ -47,6 +47,7 @@ public class CommentController {
 
     public JSONData save(RequestComment form, Errors errors) {
         if (errors.hasErrors()) {
+            System.out.println(errors.getAllErrors());
             throw new BadRequestException(utils.getErrorMessages(errors));
         }
         saveService.save(form);
@@ -70,11 +71,12 @@ public class CommentController {
     @Operation(summary = "댓글 목록", method = "GET", description = "댓글 모두 조회")
     @ApiResponse(responseCode = "200")
     @Parameters({
-            @Parameter(name = "seq", description = "경로변수, 댓글 번호", example = "100")
+            @Parameter(name = "seq", description = "경로변수, 논문 번호", example = "100")
     })
-    @GetMapping("/list/{seq}") // 댓글 목록
-    public JSONData getList(@PathVariable("seq") Long seq) {
-        List<CommentData> items = infoService.getList(seq);
+    @GetMapping("/list/{tid}") // 댓글 목록
+    public JSONData getList(@PathVariable("tid") Long tid) {
+        System.out.println("유입!");
+        List<CommentData> items = infoService.getList(tid);
 
         return new JSONData(items); // 댓글 목록으로 반환값을 내보낸다.
     }

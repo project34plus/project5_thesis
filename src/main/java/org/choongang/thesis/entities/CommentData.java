@@ -17,7 +17,7 @@ public class CommentData extends BaseEntity {
     @Id @GeneratedValue
     private Long seq;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Thesis thesis;
 
     @Column(length = 80, nullable=false)
