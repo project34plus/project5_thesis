@@ -32,6 +32,7 @@ public class Thesis extends BaseMemberEntity {
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
+    @Column(nullable = false)
     private List<Field> fields;
 
     @Column(length=40, nullable = false)

@@ -12,6 +12,8 @@ import org.choongang.global.Utils;
 import org.choongang.global.exceptions.BadRequestException;
 import org.choongang.global.rests.JSONData;
 import org.choongang.thesis.entities.Thesis;
+import org.choongang.thesis.entities.VersionLog;
+import org.choongang.thesis.repositories.VersionLogRepository;
 import org.choongang.thesis.services.ThesisDeleteService;
 import org.choongang.thesis.services.ThesisInfoService;
 import org.choongang.thesis.services.ThesisSaveService;
@@ -38,6 +40,7 @@ public class ThesisController {
     private final ThesisViewService thesisViewService;
     private final Utils utils;
     private final UserLogService userLogService;
+    private final VersionLogRepository versionLogRepository;
 
 
     @Operation(summary = "논문 등록", method = "POST")
@@ -139,5 +142,15 @@ public class ThesisController {
         List<Thesis> recentTheses = userLogService.getRecentlyViewedTheses(email);
         //System.out.println(recentTheses);
         return new JSONData(recentTheses);
+    }
+
+    @Operation(summary = "논문 버전 기록 조회", method = "GET")
+    @ApiResponse(responseCode = "200")
+    @Parameter(name = "tid", required = true, description = "논문 ID", example = "100")
+    @GetMapping("/info/{tid}/versions")
+    @PreAuthorize("permitAll()")
+    public JSONData getVersionLogs(@PathVariable("tid") Long tid) {
+        List<VersionLog> versionLogs = versionLogRepository.findByThesis_Tid(tid);
+        return new JSONData(versionLogs);
     }
 }
