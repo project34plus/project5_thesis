@@ -1,5 +1,6 @@
 package org.choongang.thesis.services;
 
+import org.choongang.global.rests.ApiRequest;
 import org.choongang.thesis.constants.ApprovalStatus;
 import org.choongang.thesis.constants.Category;
 import org.choongang.thesis.entities.Thesis;
@@ -25,6 +26,8 @@ public class WishListServiceTest {
 
     @Autowired
     private ThesisRepository thesisRepository;
+    @Autowired
+    private ApiRequest apiRequest;
 
     @BeforeEach
     public void setup() {
@@ -88,6 +91,13 @@ public class WishListServiceTest {
         assertEquals(2, wishList.size(), "위시리스트에 추가된 논문 수가 맞지 않습니다.");
         assertTrue(wishList.contains(thesisId1), "논문 1이 위시리스트에 추가되지 않았습니다.");
         assertTrue(wishList.contains(thesisId2), "논문 2가 위시리스트에 추가되지 않았습니다.");
+    }
+    @Test
+    public void getPersonalList(){
+        ApiRequest result = apiRequest.request("/wish/test@test.org","thesis-service");
+        if(result.getStatus().is2xxSuccessful()){
+            System.out.println(result.getData());
+        }
     }
 
     /*
