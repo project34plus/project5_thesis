@@ -7,12 +7,16 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.choongang.global.ListData;
 import org.choongang.global.rests.JSONData;
+import org.choongang.member.MemberUtil;
 import org.choongang.thesis.entities.Thesis;
+import org.choongang.thesis.repositories.WishListRepository;
 import org.choongang.thesis.services.ThesisInfoService;
 import org.choongang.thesis.services.WishListService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "Wish", description = "위시리스트 API")
 @RestController
@@ -21,6 +25,8 @@ import org.springframework.web.bind.annotation.*;
 public class WishListController {
     private final WishListService wishListService;
     private final ThesisInfoService thesisInfoService;
+    private final WishListRepository wishListRepository;
+    private final MemberUtil memberUtil;
 
     @Operation(summary = "위시리스트 목록 조회", method = "GET")
     @ApiResponse(responseCode = "200")
@@ -29,6 +35,15 @@ public class WishListController {
 
         ListData<Thesis> data = thesisInfoService.getWishList(search);
 
+        return new JSONData(data);
+    }
+
+    @Operation(summary = "회원 위시리스트 목록 조회", method = "GET")
+    @ApiResponse(responseCode = "200")
+    @GetMapping("/mylist")
+    public JSONData personalList() {
+        String email = memberUtil.getMember().getEmail();
+        List<String> data = wishListRepository.findWishListByEmail(email);
         return new JSONData(data);
     }
 
@@ -49,7 +64,7 @@ public class WishListController {
     @ApiResponse(responseCode = "200")
     @Parameter(name = "tid", required = true, description = "경로변수, 찜한 논문 번호")
     @DeleteMapping("/{tid}")
-    public ResponseEntity<Void> remove(@PathVariable("tid") Long tid){
+    public ResponseEntity<Void> remove(@PathVariable("tid") Long tid) {
 
         wishListService.remove(tid);
 
