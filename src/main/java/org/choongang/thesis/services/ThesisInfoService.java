@@ -142,7 +142,7 @@ public class ThesisInfoService {
 //                enumExpression = thesis.category;
 //            } else if (sopt.equals("FIELD")) {
 //
-//                //추가할 예정
+//                //분류명 필터 있어서 통합검색에는 없어도 될 듯
             } else if (sopt.equals("TITLE")) {
                 expression = thesis.title;
             } else if (sopt.equals("POSTER")) {
@@ -335,6 +335,12 @@ public class ThesisInfoService {
             }
         }
         /* 고급 검색 처리 E */
+
+        //학문 대분류 검색 S
+        if (fields != null && !fields.isEmpty()) {
+            andBuilder.and(thesis.fields.any().name.in(fields));
+        }
+        //학문 대분류 검색 E
 
         // 정렬 처리 S, -> 목록 조회 처리 추가 필요함
         String sort = search.getSort();
