@@ -33,7 +33,7 @@ public class Thesis extends BaseMemberEntity {
     private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Column(nullable = false)
     private List<Field> fields;
 
@@ -65,7 +65,7 @@ public class Thesis extends BaseMemberEntity {
     private String publisher; // 발행기관
 
     @Lob
-    private String toc; // 목차
+    private String toc; // 목차cddd
 
     @Lob
     private String keywords; // 키워드
