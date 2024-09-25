@@ -11,6 +11,7 @@ import org.choongang.global.ListData;
 import org.choongang.global.Utils;
 import org.choongang.global.exceptions.BadRequestException;
 import org.choongang.global.rests.JSONData;
+import org.choongang.member.MemberUtil;
 import org.choongang.thesis.entities.Thesis;
 import org.choongang.thesis.entities.VersionLog;
 import org.choongang.thesis.repositories.VersionLogRepository;
@@ -41,6 +42,7 @@ public class ThesisController {
     private final Utils utils;
     private final UserLogService userLogService;
     private final VersionLogRepository versionLogRepository;
+    private final MemberUtil memberUtil;
 
 
     @Operation(summary = "논문 등록", method = "POST")
@@ -151,6 +153,16 @@ public class ThesisController {
     @PreAuthorize("permitAll()")
     public JSONData getVersionLogs(@PathVariable("tid") Long tid) {
         List<VersionLog> versionLogs = versionLogRepository.findByThesis_Tid(tid);
+        System.out.println("Version Logs: " + versionLogs);
         return new JSONData(versionLogs);
     }
+    @GetMapping("/visit")
+    public JSONData personalList() {
+        System.out.println("장성준");
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<Thesis> visitHistory = thesisInfoService.getVisitHistoryByEmail(email);
+        return new JSONData(visitHistory);
+    }
+
+
 }

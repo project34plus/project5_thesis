@@ -18,9 +18,11 @@ import org.choongang.thesis.controllers.ThesisSearch;
 import org.choongang.thesis.entities.Field;
 import org.choongang.thesis.entities.QThesis;
 import org.choongang.thesis.entities.Thesis;
+import org.choongang.thesis.entities.VisitHistory;
 import org.choongang.thesis.exceptions.ThesisNotFoundException;
 import org.choongang.thesis.repositories.FieldRepository;
 import org.choongang.thesis.repositories.ThesisRepository;
+import org.choongang.thesis.repositories.VisitHistoryRepository;
 import org.choongang.thesisAdvance.controllers.RecommendSearch;
 import org.choongang.thesisAdvance.services.UserLogService;
 import org.modelmapper.ModelMapper;
@@ -52,6 +54,7 @@ public class ThesisInfoService {
     private final MemberUtil memberUtil;
     private final FieldRepository fieldRepository;
     private final UserLogService userLogService;
+    private final VisitHistoryRepository visitHistoryRepository;
 
 
     public Thesis get(Long tid) {
@@ -413,9 +416,24 @@ public class ThesisInfoService {
     /**
      * 내가 찜한 논문 목록
      *
-     * @param search
+     * @param
      * @return
      */
+
+
+    public List<Thesis> getVisitHistoryByEmail(String email) {
+        List<VisitHistory> visitHistories = visitHistoryRepository.findByEmailOrderBySearchDateDesc(email);
+
+        // 방문 기록에서 tid를 추출하여 논문 데이터 조회
+        List<Long> thesisIds = visitHistories.stream()
+                .map(VisitHistory::getThesis)
+                .map(thesis -> thesis.getTid())
+                .collect(Collectors.toList());
+
+        return thesisRepository.findByTidIn(thesisIds);
+    }
+
+
     public ListData<Thesis> getWishList(ThesisSearch search) {
         int page = Math.max(search.getPage(), 1);
         int limit = search.getLimit();
