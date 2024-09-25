@@ -337,7 +337,7 @@ public class ThesisInfoService {
         /* 고급 검색 처리 E */
 
         //학문 대분류 검색 S
-        if (fields != null && !fields.isEmpty()) {
+        if (!(search instanceof RecommendSearch) && fields != null && !fields.isEmpty()) {
             andBuilder.and(thesis.fields.any().name.in(fields));
         }
         //학문 대분류 검색 E
