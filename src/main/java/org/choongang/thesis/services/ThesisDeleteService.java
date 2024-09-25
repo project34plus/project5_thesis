@@ -29,6 +29,7 @@ public class ThesisDeleteService {
 
         // 1. Thesis와 연결된 Field에서 연결 제거
         List<Field> fields = thesis.getFields();
+        List<Field> saveFields = thesis.getFields();
         if (fields != null && !fields.isEmpty()) {
             for (Field field : fields) {
                 field.getTheses().remove(thesis);
@@ -48,6 +49,7 @@ public class ThesisDeleteService {
 
         // 9. 논문 삭제
         thesisRepository.delete(thesis);
+        fieldRepository.saveAllAndFlush(saveFields);
     }
     public void deleteList(List<Long> tids) {
         for(Long tid : tids) {
