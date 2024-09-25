@@ -157,8 +157,8 @@ public class ThesisController {
         return new JSONData(versionLogs);
     }
     @GetMapping("/visit")
+    @PreAuthorize("permitAll()")
     public JSONData personalList() {
-        System.out.println("장성준");
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         List<Thesis> visitHistory = thesisInfoService.getVisitHistoryByEmail(email);
         return new JSONData(visitHistory);
