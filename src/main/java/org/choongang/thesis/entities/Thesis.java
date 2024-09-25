@@ -33,7 +33,7 @@ public class Thesis extends BaseMemberEntity {
     private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Column(nullable = false)
     private List<Field> fields;
 

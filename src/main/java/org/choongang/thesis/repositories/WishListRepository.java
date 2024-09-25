@@ -12,4 +12,5 @@ import java.util.List;
 public interface WishListRepository extends JpaRepository<WishList, WishListId>, QuerydslPredicateExecutor<WishList> {
     @Query("SELECT wl.tid from WishList wl where wl.email=:email")
     List<String> findWishListByEmail(@Param("email") String email);
+    void deleteByTid(Long tid);
 }

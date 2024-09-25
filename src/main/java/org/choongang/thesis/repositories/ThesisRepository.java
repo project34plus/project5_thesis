@@ -9,5 +9,7 @@ import java.util.List;
 
 @Transactional
 public interface ThesisRepository extends JpaRepository<Thesis, Long> , QuerydslPredicateExecutor<Thesis> {
+
     List<Thesis> findByTidIn(List<Long> tids);
+    void deleteByTid(Long tid);
 }

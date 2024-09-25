@@ -28,30 +28,21 @@ public class TrendInfoService {
 
     // 직업별 인기 키워드 조회
     public List<Map<String, Object>> getKeywordRankingByJob(TrendSearch search) {
-        LocalDate sDate = search.getSDate();
-        LocalDate eDate = search.getEDate();
+        LocalDate sDate = Objects.requireNonNullElse(search.getSDate(), LocalDate.now().minusYears(1L));
+        LocalDate eDate = Objects.requireNonNullElse(search.getEDate(), LocalDate.now());
         List<String> job = search.getJob();
 
         QUserLog userLog = QUserLog.userLog;
-        BooleanBuilder builder = new BooleanBuilder();
-        if (sDate != null) {
-            builder.and(userLog.searchDate.after(sDate.atStartOfDay()));
-        }
-        if (eDate != null) {
-            builder.and(userLog.searchDate.before(eDate.atTime(LocalTime.MAX)));
-        }
-        if (job != null && !job.isEmpty()) {
-            builder.and(userLog.job.in(job));
-        }
 
-        List<Tuple> items = queryFactory.select(userLog.job, userLog.search.count(), userLog.search)
+
+        List<Tuple> items = queryFactory.select(userLog.job, userLog.search.count(), userLog.search, userLog.searchDate)
                 .from(userLog)
-                .groupBy(userLog.job, userLog.search)
+                .groupBy(userLog.job, userLog.search, userLog.searchDate)
                 .orderBy(userLog.search.count().desc())
                 .fetch();
 
         if (items != null && !items.isEmpty()) {
-            return items.stream().map(t -> {
+            return items.stream().filter(t -> t.get(userLog.searchDate).isAfter(sDate.atStartOfDay()) && t.get(userLog.searchDate).isBefore(eDate.atTime(LocalTime.MAX))).map(t -> {
                 Map<String, Object> data = new HashMap<>();
                 data.put("job", t.get(userLog.job));
                 data.put("count", t.get(userLog.search.count()));
