@@ -1,6 +1,7 @@
 package org.choongang.thesis.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,7 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Thesis extends BaseMemberEntity {
     @Id @GeneratedValue
     private Long tid;
@@ -31,7 +33,7 @@ public class Thesis extends BaseMemberEntity {
     private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Column(nullable = false)
     private List<Field> fields;
 
@@ -63,7 +65,7 @@ public class Thesis extends BaseMemberEntity {
     private String publisher; // 발행기관
 
     @Lob
-    private String toc; // 목차
+    private String toc; // 목차cddd
 
     @Lob
     private String keywords; // 키워드
