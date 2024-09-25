@@ -12,6 +12,7 @@ import org.choongang.thesis.repositories.FieldRepository;
 import org.choongang.thesis.services.WishListService;
 import org.choongang.thesisAdvance.controllers.TrendSearch;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -30,7 +31,6 @@ public class TrendInfoService {
     public List<Map<String, Object>> getKeywordRankingByJob(TrendSearch search) {
         LocalDate sDate = Objects.requireNonNullElse(search.getSDate(), LocalDate.now().minusYears(1L));
         LocalDate eDate = Objects.requireNonNullElse(search.getEDate(), LocalDate.now());
-        List<String> job = search.getJob();
 
         QUserLog userLog = QUserLog.userLog;
 
@@ -82,7 +82,7 @@ public class TrendInfoService {
 
         QField field = QField.field;
         List<Field> fields = (List<Field>) fieldRepository.findAll(field.id.in(fieldIds));
-        Map<String, Map<String, Object>> statData = fields.stream().collect(Collectors.toMap(Field::getId, f -> {
+        Map<String, Map<String, Object>> statData = fields.stream().filter(f -> StringUtils.hasText(f.getName())).collect(Collectors.toMap(Field::getId, f -> {
             Map<String, Object> data = new HashMap<>();
             data.put("name", f.getName());
             data.put("subfield", f.getSubfield());
