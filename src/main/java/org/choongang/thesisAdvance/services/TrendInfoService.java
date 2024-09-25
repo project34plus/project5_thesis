@@ -47,12 +47,13 @@ public class TrendInfoService {
         List<Tuple> items = queryFactory.select(userLog.job, userLog.search.count(), userLog.search)
                 .from(userLog)
                 .where(builder)
-                .groupBy(userLog.job, userLog.search)
+                .groupBy(userLog.job, userLog.search, userLog.searchDate)
                 .orderBy(userLog.search.count().desc())
                 .fetch();
 
         if (items != null && !items.isEmpty()) {
             return items.stream().map(t -> {
+
                 Map<String, Object> data = new HashMap<>();
                 data.put("job", t.get(userLog.job));
                 data.put("count", t.get(userLog.search.count()));
