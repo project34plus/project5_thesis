@@ -20,11 +20,6 @@ public class ThesisDeleteService {
     private final FieldRepository fieldRepository;
     private final FileDeleteService deleteService;
     private final CommentDataRepository commentRepository;
-    private final ThesisViewRepository thesisViewRepository;
-    private final ThesisViewDailyRepository thesisViewDailyRepository;
-    private final VersionLogRepository versionLogRepository;
-    private final VisitHistoryRepository visitHistoryRepository;
-    private final WishListRepository wishListRepository;
 
 
     @Transactional
@@ -46,21 +41,6 @@ public class ThesisDeleteService {
         if (comments != null && !comments.isEmpty()) {
             commentRepository.deleteAll(comments);
         }
-
-        // 3. Thesis와 연결된 ThesisView 삭제
-        thesisViewRepository.deleteByTid(tid); // tid로 ThesisView 삭제하는 메소드
-
-        // 4. Thesis와 연결된 ThesisViewDaily 삭제
-        thesisViewDailyRepository.deleteByTid(tid); // tid로 ThesisViewDaily 삭제하는 메소드
-
-        // 5. Thesis와 연결된 VersionLog 삭제
-        versionLogRepository.deleteByThesis(thesis); // Thesis로 VersionLog 삭제하는 메소드
-
-        // 6. Thesis와 연결된 VisitHistory 삭제
-        visitHistoryRepository.deleteByThesis(thesis); // Thesis로 VisitHistory 삭제하는 메소드
-
-        // 7. Thesis와 연결된 WishList 삭제
-        wishListRepository.deleteByTid(tid); // tid로 WishList 삭제하는 메소드
 
         // 8. 논문 PDF 파일 삭제
         String gid = thesis.getGid();
