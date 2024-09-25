@@ -2,9 +2,11 @@ package org.choongang.thesis.services;
 
 import lombok.RequiredArgsConstructor;
 import org.choongang.file.services.FileDeleteService;
+import org.choongang.thesis.entities.CommentData;
 import org.choongang.thesis.entities.Field;
 import org.choongang.thesis.entities.Thesis;
 import org.choongang.thesis.exceptions.ThesisNotFoundException;
+import org.choongang.thesis.repositories.CommentDataRepository;
 import org.choongang.thesis.repositories.FieldRepository;
 import org.choongang.thesis.repositories.ThesisRepository;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ public class ThesisDeleteService {
     private final ThesisRepository thesisRepository;
     private final FieldRepository fieldRepository;
     private final FileDeleteService deleteService;
+    private final CommentDataRepository commentDataRepository;
 
     public void delete(Long tid) {
         Thesis thesis = thesisRepository.findById(tid).orElseThrow(ThesisNotFoundException::new);
@@ -28,6 +31,12 @@ public class ThesisDeleteService {
         if(fields != null && !fields.isEmpty()) {
             fieldRepository.deleteAll(fields);
             fieldRepository.flush();
+        }
+
+        List<CommentData> comments = thesis.getComments();
+        if(comments != null && !comments.isEmpty()) {
+            commentDataRepository.deleteAll(comments);
+            commentDataRepository.flush();
         }
 
         //논문 PDF 파일 삭제
