@@ -97,7 +97,7 @@ public class ThesisInfoService {
         LocalDate sDate = search.getSDate(); //검색 시작일
         LocalDate eDate = search.getEDate(); //검색 종료일
 
-        List<String> category = search.getCategory(); //카테고리
+//        List<String> category = search.getCategory(); //카테고리
         List<String> fields = search.getFields(); //분류명
         List<String> email = search.getEmail(); //작성한 회원 이메일
 
@@ -138,11 +138,11 @@ public class ThesisInfoService {
                         .concat(thesis.publisher)
                         .concat(thesis.language)
                         .concat(thesis.country);
-            } else if (sopt.equals("CATEGORY")) {
-                enumExpression = thesis.category;
-            } else if (sopt.equals("FIELD")) {
-
-                //추가할 예정
+//            } else if (sopt.equals("CATEGORY")) {
+//                enumExpression = thesis.category;
+//            } else if (sopt.equals("FIELD")) {
+//
+//                //분류명 필터 있어서 통합검색에는 없어도 될 듯
             } else if (sopt.equals("TITLE")) {
                 expression = thesis.title;
             } else if (sopt.equals("POSTER")) {
@@ -335,6 +335,12 @@ public class ThesisInfoService {
             }
         }
         /* 고급 검색 처리 E */
+
+        //학문 대분류 검색 S
+        if (fields != null && !fields.isEmpty()) {
+            andBuilder.and(thesis.fields.any().name.in(fields));
+        }
+        //학문 대분류 검색 E
 
         // 정렬 처리 S, -> 목록 조회 처리 추가 필요함
         String sort = search.getSort();
