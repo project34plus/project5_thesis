@@ -63,7 +63,7 @@ public class Thesis extends BaseMemberEntity {
     private String publisher; // 발행기관
 
     @Lob
-    private String toc; // 목차
+    private String toc; // 목차cddd
 
     @Lob
     private String keywords; // 키워드
