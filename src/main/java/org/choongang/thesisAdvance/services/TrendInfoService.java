@@ -48,6 +48,7 @@ public class TrendInfoService {
                 .from(userLog)
                 .groupBy(userLog.job, userLog.search)
                 .orderBy(userLog.search.count().desc())
+                .where(builder)
                 .fetch();
 
         if (items != null && !items.isEmpty()) {
