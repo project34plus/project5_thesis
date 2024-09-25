@@ -46,9 +46,9 @@ public class TrendInfoService {
 
         List<Tuple> items = queryFactory.select(userLog.job, userLog.search.count(), userLog.search)
                 .from(userLog)
+                .where(builder)
                 .groupBy(userLog.job, userLog.search)
                 .orderBy(userLog.search.count().desc())
-                .where(builder)
                 .fetch();
 
         if (items != null && !items.isEmpty()) {
