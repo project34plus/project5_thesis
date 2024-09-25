@@ -33,7 +33,7 @@ public class InterestSaveService {
             interestsRepository.deleteByEmail(email);//삭제 후
             interestsRepository.flush();
         }
-        _interests.forEach(interestsRepository::saveAndFlush);
+        _interests.stream().filter(i->i.getId()!=null).forEach(interestsRepository::saveAndFlush);
 
     }
 }

@@ -1,7 +1,6 @@
 package org.choongang.thesis.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -65,7 +64,7 @@ public class Thesis extends BaseMemberEntity {
     private String publisher; // 발행기관
 
     @Lob
-    private String toc; // 목차cddd
+    private String toc; // 목차
 
     @Lob
     private String keywords; // 키워드
