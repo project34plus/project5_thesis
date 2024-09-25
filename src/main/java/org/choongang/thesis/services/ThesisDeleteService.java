@@ -22,7 +22,6 @@ public class ThesisDeleteService {
     private final CommentDataRepository commentRepository;
 
 
-    @Transactional
     public void delete(Long tid) {
         Thesis thesis = thesisRepository.findById(tid)
                 .orElseThrow(ThesisNotFoundException::new);
