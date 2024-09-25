@@ -43,7 +43,7 @@ public class CommentTest {
         RequestComment form = new RequestComment();
 
         form.setTid(thesis.getTid());
-        form.setUsername(member.getUserName());
+        form.setUserName(member.getUserName());
         form.setContent("good");
 
         commentSaveService.save(form);
