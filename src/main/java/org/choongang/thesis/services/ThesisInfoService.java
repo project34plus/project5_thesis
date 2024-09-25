@@ -21,6 +21,7 @@ import org.choongang.thesis.entities.Thesis;
 import org.choongang.thesis.exceptions.ThesisNotFoundException;
 import org.choongang.thesis.repositories.FieldRepository;
 import org.choongang.thesis.repositories.ThesisRepository;
+import org.choongang.thesisAdvance.controllers.RecommendSearch;
 import org.choongang.thesisAdvance.services.UserLogService;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -96,7 +97,7 @@ public class ThesisInfoService {
         LocalDate sDate = search.getSDate(); //검색 시작일
         LocalDate eDate = search.getEDate(); //검색 종료일
 
-        List<String> category = search.getCategory(); //카테고리
+//        List<String> category = search.getCategory(); //카테고리
         List<String> fields = search.getFields(); //분류명
         List<String> email = search.getEmail(); //작성한 회원 이메일
 
@@ -137,11 +138,11 @@ public class ThesisInfoService {
                         .concat(thesis.publisher)
                         .concat(thesis.language)
                         .concat(thesis.country);
-            } else if (sopt.equals("CATEGORY")) {
-                enumExpression = thesis.category;
-            } else if (sopt.equals("FIELD")) {
-
-                //추가할 예정
+//            } else if (sopt.equals("CATEGORY")) {
+//                enumExpression = thesis.category;
+//            } else if (sopt.equals("FIELD")) {
+//
+//                //분류명 필터 있어서 통합검색에는 없어도 될 듯
             } else if (sopt.equals("TITLE")) {
                 expression = thesis.title;
             } else if (sopt.equals("POSTER")) {
@@ -192,11 +193,27 @@ public class ThesisInfoService {
         if (fields != null && !fields.isEmpty()) {
             fieldRepository.findByIdIn(fields).forEach(i -> andBuilder.or(thesis.fields.contains(i)));
         }
+        if (search instanceof RecommendSearch) {//추천서비스
 
-            //논문 등록일 검색
-            if (sDate != null) { //검색 시작일
-                andBuilder.and(thesis.createdAt.goe(sDate.atTime(LocalTime.MIN)));
+            String fieldFilter = ((RecommendSearch) search).getFieldFilter();
+            BooleanBuilder orBuilder = new BooleanBuilder();
+            BooleanBuilder orBuilder2 = new BooleanBuilder();
+            if (StringUtils.hasText(fieldFilter)) {
+                fieldRepository.findByName(fieldFilter).forEach(i -> orBuilder.or(thesis.fields.contains(i)));
             }
+            List<String> searchLog = ((RecommendSearch) search).getSearchLog();
+            if (!searchLog.isEmpty()) {
+                searchLog.forEach(i -> orBuilder2.or(thesis.keywords.contains(i)));
+            }
+
+            andBuilder.and(orBuilder);
+            andBuilder.or(orBuilder2);
+        }
+
+        //논문 등록일 검색
+        if (sDate != null) { //검색 시작일
+            andBuilder.and(thesis.createdAt.goe(sDate.atTime(LocalTime.MIN)));
+        }
         if (eDate != null) { //검색 종료일
             andBuilder.and(thesis.createdAt.loe(eDate.atTime(LocalTime.MAX)));
         }
@@ -235,7 +252,9 @@ public class ThesisInfoService {
 
         if (sopts != null && !sopts.isEmpty()) {
             List<Map<String, BooleanExpression>> data = new ArrayList<>();
+//            System.out.println(sopts);
             for (int i = 0; i < sopts.size(); i++) {
+                System.out.println(sopts);
                 String _sopt = sopts.get(i);
                 String _skey = skeys.get(i);
                 String operator = operators.get(i);
@@ -243,7 +262,16 @@ public class ThesisInfoService {
                 if (!StringUtils.hasText(_sopt) || !StringUtils.hasText(_skey)) continue;
 
                 StringExpression expression = null;
-                if (_sopt.equals("poster")) {
+                if (sopt.equals("ALL")) { // 통합 검색
+                    expression = thesis.title
+                            .concat(String.valueOf(thesis.category))
+                            .concat(String.valueOf(thesis.fields))
+                            .concat(thesis.poster)
+                            .concat(thesis.thAbstract)
+                            .concat(thesis.publisher)
+                            .concat(thesis.language)
+                            .concat(thesis.country);
+                } else if (_sopt.equals("poster")) {
                     expression = thesis.poster;
                 } else if (_sopt.equals("title")) {
                     expression = thesis.title;
@@ -263,7 +291,7 @@ public class ThesisInfoService {
                 data.add(c);
             }
 
-            System.out.println("data: " + data);
+//            System.out.println("data: " + data);
             String prevOperator = "";
             BooleanBuilder orBuilder = new BooleanBuilder();
             int i = 0;
@@ -308,6 +336,12 @@ public class ThesisInfoService {
         }
         /* 고급 검색 처리 E */
 
+        //학문 대분류 검색 S
+        if (fields != null && !fields.isEmpty()) {
+            andBuilder.and(thesis.fields.any().name.in(fields));
+        }
+        //학문 대분류 검색 E
+
         // 정렬 처리 S, -> 목록 조회 처리 추가 필요함
         String sort = search.getSort();
 
@@ -346,10 +380,35 @@ public class ThesisInfoService {
         if (!memberUtil.isLogin()) {
             return new ListData<>();
         }
-        String email = memberUtil.getMember().getEmail();
-        search.setEmail(List.of(email));
-        return getList(search);
+
+        // 현재 로그인한 사용자의 이메일 가져오기
+        String userEmail = memberUtil.getMember().getEmail();
+
+        // 로그인한 사용자가 작성한 논문만 필터링 (승인 상태와 상관없이 조회)
+        BooleanBuilder andBuilder = new BooleanBuilder();
+        QThesis thesis = QThesis.thesis;
+        andBuilder.and(thesis.email.eq(userEmail));
+
+        // 기본적으로 페이지네이션 처리 (필요 없으면 제거 가능)
+        int page = Math.max(search.getPage(), 1);
+        int limit = search.getLimit();
+        limit = limit < 1 ? 20 : limit;
+
+        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Order.desc("createdAt")));
+
+        // 논문 목록 조회
+        Page<Thesis> data = thesisRepository.findAll(andBuilder, pageable);
+
+        // 페이지네이션 정보
+        Pagination pagination = new Pagination(page, (int) data.getTotalElements(), 10, limit, request);
+
+        // 추가 정보 설정 및 반환
+        List<Thesis> items = data.getContent();
+        items.forEach(this::addInfo);
+
+        return new ListData<>(items, pagination);
     }
+
 
     /**
      * 내가 찜한 논문 목록

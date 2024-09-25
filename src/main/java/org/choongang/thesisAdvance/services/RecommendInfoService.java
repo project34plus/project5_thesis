@@ -15,11 +15,11 @@ import org.choongang.thesis.exceptions.FieldNotFoundException;
 import org.choongang.thesis.repositories.FieldRepository;
 import org.choongang.thesis.repositories.InterestsRepository;
 import org.choongang.thesis.repositories.ThesisRepository;
+import org.choongang.thesis.repositories.UserLogRepository;
 import org.choongang.thesis.services.ThesisInfoService;
 import org.choongang.thesisAdvance.controllers.RecommendSearch;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -35,6 +35,7 @@ public class RecommendInfoService {
     private final Utils utils;
     private final FileInfoService fileInfoService;
     private final ThesisInfoService thesisInfoService;
+    private final UserLogRepository userLogRepository;
 
     /**
      * 추천 논문 목록
@@ -48,7 +49,7 @@ public class RecommendInfoService {
         /*회원별 카테고리, 관심분야 처리 E*/
 
         /*회원별 조회한 논문의 분야 불러오기*/
-        getThesisFieldFromUserLog(email).forEach(i -> {
+        getThesisFieldFromVisitHistory(email).forEach(i -> {
             Field field = fieldRepository.findById(i[1].toString()).orElseThrow(FieldNotFoundException::new);
             ids.add(field.getId());
         });
@@ -61,10 +62,10 @@ public class RecommendInfoService {
             }
             Member member = result.toObj(Member.class);
             if (member.getMemMajor() != null) {
-                ids.add(member.getMemMajor());
+                ids.addAll(fieldRepository.findIdByName(member.getMemMajor()));
             }
             if (member.getMemMinor() != null) {
-                ids.add(member.getMemMinor());
+                ids.addAll(fieldRepository.findIdByName(member.getMemMinor()));
             }
         } catch (BadRequestException e) {
             e.printStackTrace();
@@ -73,19 +74,22 @@ public class RecommendInfoService {
 
         String sort = "viewCount_DESC";
         search.setSort(sort);
-
-        if (StringUtils.hasText(search.getFieldFilter())) {
+        /*if (StringUtils.hasText(search.getFieldFilter())) {
             ids.clear();
-            ids.add(search.getFieldFilter());
-        }
+            ids.addAll(fieldRepository.findIdByName(search.getFieldFilter()));
+        }*/
         search.setFields(ids);
         //찜한 리스트에서
+
+        //키워드
+        List<String> searchKeywordList = userLogRepository.findDistinctSearchByEmail(email);
+        search.setSearchLog(searchKeywordList);
 
         return thesisInfoService.getList(search);
     }
 
-    private List<Object[]> getThesisFieldFromUserLog(String email) {
-        String sql = "SELECT * FROM THESIS_FIELDS tf WHERE THESES_TID IN (SELECT ul.tid FROM USER_LOG ul WHERE ul.email = :email GROUP BY ul.tid ) ORDER BY ( SELECT COUNT(ul.tid) FROM USER_LOG ul WHERE ul.tid = tf.THESES_TID) DESC";
+    private List<Object[]> getThesisFieldFromVisitHistory(String email) {
+        String sql = "SELECT * FROM THESIS_FIELDS tf WHERE THESES_TID IN (SELECT vh.tid FROM VISIT_HISTORY vh WHERE vh.email = :email GROUP BY vh.tid ) ORDER BY ( SELECT COUNT(vh.tid) FROM VISIT_HISTORY vh WHERE vh.tid = tf.THESES_TID) DESC";
         return em.createNativeQuery(sql)
                 .setParameter("email", email)
                 .getResultList();

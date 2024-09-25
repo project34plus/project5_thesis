@@ -3,7 +3,6 @@ package org.choongang.thesis.services;
 import com.querydsl.core.BooleanBuilder;
 import lombok.RequiredArgsConstructor;
 import org.choongang.global.Utils;
-import org.choongang.global.exceptions.BadRequestException;
 import org.choongang.member.MemberUtil;
 import org.choongang.thesis.entities.QWishList;
 import org.choongang.thesis.entities.WishList;
@@ -35,7 +34,7 @@ public class WishListService {
         wishListRepository.saveAndFlush(wishList);
     }
 
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     public void remove(Long tid) {
         WishListId wishListId = new WishListId(tid, memberUtil.getMember().getEmail());
         wishListRepository.deleteById(wishListId);
