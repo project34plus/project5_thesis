@@ -35,10 +35,10 @@ public class TrendInfoService {
         QUserLog userLog = QUserLog.userLog;
         BooleanBuilder builder = new BooleanBuilder();
         if (sDate != null) {
-            builder.and(userLog.searchDate.after(sDate.atStartOfDay()));
+            builder.and(userLog.searchDate.goe(sDate.atStartOfDay()));
         }
         if (eDate != null) {
-            builder.and(userLog.searchDate.before(eDate.atTime(LocalTime.MAX)));
+            builder.and(userLog.searchDate.loe(eDate.atTime(LocalTime.MAX)));
         }
         if (job != null && !job.isEmpty()) {
             builder.and(userLog.job.in(job));
