@@ -1,6 +1,7 @@
 package org.choongang.thesis.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,7 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Thesis extends BaseMemberEntity {
     @Id @GeneratedValue
     private Long tid;
@@ -31,7 +33,7 @@ public class Thesis extends BaseMemberEntity {
     private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @Column(nullable = false)
     private List<Field> fields;
 

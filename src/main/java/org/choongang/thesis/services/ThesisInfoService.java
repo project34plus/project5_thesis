@@ -422,7 +422,6 @@ public class ThesisInfoService {
 
 
     public List<Thesis> getVisitHistoryByEmail(String email) {
-        // 이메일을 기준으로 방문 기록 조회 (날짜 내림차순 정렬)
         List<VisitHistory> visitHistories = visitHistoryRepository.findByEmailOrderBySearchDateDesc(email);
 
         // 방문 기록에서 tid를 추출하여 논문 데이터 조회
