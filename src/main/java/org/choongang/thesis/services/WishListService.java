@@ -4,6 +4,7 @@ import com.querydsl.core.BooleanBuilder;
 import lombok.RequiredArgsConstructor;
 import org.choongang.global.Utils;
 import org.choongang.member.MemberUtil;
+import org.choongang.thesis.entities.QThesis;
 import org.choongang.thesis.entities.QWishList;
 import org.choongang.thesis.entities.WishList;
 import org.choongang.thesis.entities.WishListId;
@@ -48,8 +49,10 @@ public class WishListService {
             return Collections.EMPTY_LIST;
         }
         BooleanBuilder builder = new BooleanBuilder();
+        QThesis thesis = QThesis.thesis;
         QWishList wishList = QWishList.wishList;
-        builder.and(wishList.email.eq(memberUtil.getMember().getEmail()));
+        builder.and(wishList.email.eq(memberUtil.getMember().getEmail()))
+                .and(thesis.deletedAt.isNull());
 
         List<Long> items = ((List<WishList>) wishListRepository.findAll(builder, Sort.by(desc("createdAt")))).stream().map(WishList::getTid).toList();
 
