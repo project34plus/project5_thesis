@@ -94,6 +94,9 @@ public class ThesisInfoService {
         /* 검색 처리 S */
         BooleanBuilder andBuilder = new BooleanBuilder();
         QThesis thesis = QThesis.thesis;
+
+        andBuilder.and(thesis.deletedAt.isNull());
+
         String sopt = search.getSopt();
         String skey = search.getSkey();
 
@@ -233,6 +236,7 @@ public class ThesisInfoService {
 
         if (!memberUtil.isAdmin()) {
             andBuilder.and(thesis.visible.eq(true))
+                    .and(thesis.deletedAt.isNull())
                     .and(thesis.approvalStatus.eq(ApprovalStatus.APPROVED));
 
         }
@@ -341,6 +345,7 @@ public class ThesisInfoService {
 
         //학문 대분류 검색 S
         if (!(search instanceof RecommendSearch) && fields != null && !fields.isEmpty()) {
+            andBuilder.and(thesis.deletedAt.isNull());
             andBuilder.and(thesis.fields.any().name.in(fields));
         }
         //학문 대분류 검색 E
@@ -390,6 +395,7 @@ public class ThesisInfoService {
         // 로그인한 사용자가 작성한 논문만 필터링 (승인 상태와 상관없이 조회)
         BooleanBuilder andBuilder = new BooleanBuilder();
         QThesis thesis = QThesis.thesis;
+        andBuilder.and(thesis.deletedAt.isNull());
         andBuilder.and(thesis.email.eq(userEmail));
 
         // 기본적으로 페이지네이션 처리 (필요 없으면 제거 가능)
