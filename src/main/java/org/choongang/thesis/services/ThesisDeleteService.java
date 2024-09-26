@@ -29,6 +29,7 @@ public class ThesisDeleteService {
 
         // 1. Thesis와 연결된 Field에서 연결 제거
         List<Field> fields = thesis.getFields();
+
         if (fields != null && !fields.isEmpty()) {
             for (Field field : fields) {
                 field.getTheses().remove(thesis);
