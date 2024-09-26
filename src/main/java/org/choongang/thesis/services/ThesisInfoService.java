@@ -15,10 +15,7 @@ import org.choongang.thesis.constants.ApprovalStatus;
 import org.choongang.thesis.constants.Category;
 import org.choongang.thesis.controllers.RequestThesis;
 import org.choongang.thesis.controllers.ThesisSearch;
-import org.choongang.thesis.entities.Field;
-import org.choongang.thesis.entities.QThesis;
-import org.choongang.thesis.entities.Thesis;
-import org.choongang.thesis.entities.VisitHistory;
+import org.choongang.thesis.entities.*;
 import org.choongang.thesis.exceptions.ThesisNotFoundException;
 import org.choongang.thesis.repositories.FieldRepository;
 import org.choongang.thesis.repositories.ThesisRepository;
@@ -420,26 +417,44 @@ public class ThesisInfoService {
 
 
     /**
-     * 내가 찜한 논문 목록
-     *
-     * @param
+     * 최근 본 논문
+     * @param email
      * @return
      */
-
-
     public List<Thesis> getVisitHistoryByEmail(String email) {
-        List<VisitHistory> visitHistories = visitHistoryRepository.findByEmailOrderBySearchDateDesc(email);
+        // BooleanBuilder 생성 및 조건 추가
+        BooleanBuilder builder = new BooleanBuilder();
+        QVisitHistory visitHistory = QVisitHistory.visitHistory;
+        QThesis thesis = QThesis.thesis;
+
+        // email로 방문 기록 필터링
+        builder.and(visitHistory.email.eq(email));
+
+        // deletedAt이 null인 논문만 가져오기
+        builder.and(thesis.deletedAt.isNull());
+
+        // 방문 기록을 날짜 순으로 정렬하여 가져오기
+        List<VisitHistory> visitHistories = (List<VisitHistory>) visitHistoryRepository.findAll(builder, Sort.by(desc("searchDate")));
 
         // 방문 기록에서 tid를 추출하여 논문 데이터 조회
         List<Long> thesisIds = visitHistories.stream()
                 .map(VisitHistory::getThesis)
-                .map(thesis -> thesis.getTid())
-                .collect(Collectors.toList());
+                .map(Thesis::getTid)
+                .toList();
 
-        return thesisRepository.findByTidIn(thesisIds);
+        if (thesisIds.isEmpty()) {
+            return Collections.emptyList();  // 논문 ID가 없는 경우 빈 리스트 반환
+        }
+
+        // deletedAt이 null인 논문만 필터링해서 반환
+        return thesisRepository.findByTidInAndDeletedAtIsNull(thesisIds);
     }
 
-
+    /**
+     * 내가 찜한 논문
+     * @param search
+     * @return
+     */
     public ListData<Thesis> getWishList(ThesisSearch search) {
         int page = Math.max(search.getPage(), 1);
         int limit = search.getLimit();
