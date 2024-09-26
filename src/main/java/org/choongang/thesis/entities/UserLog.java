@@ -33,7 +33,7 @@ public class UserLog {
     @Column(length=80, nullable = false)
     private String email;
 
-    @Column(length=10, nullable = false)
+    @Column(length=40, nullable = false)
     private String job; // 검색시 직업도 추가!
 
     @Column(length=80)
