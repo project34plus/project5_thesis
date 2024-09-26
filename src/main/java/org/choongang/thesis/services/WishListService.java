@@ -4,10 +4,11 @@ import com.querydsl.core.BooleanBuilder;
 import lombok.RequiredArgsConstructor;
 import org.choongang.global.Utils;
 import org.choongang.member.MemberUtil;
-import org.choongang.thesis.entities.QThesis;
 import org.choongang.thesis.entities.QWishList;
+import org.choongang.thesis.entities.Thesis;
 import org.choongang.thesis.entities.WishList;
 import org.choongang.thesis.entities.WishListId;
+import org.choongang.thesis.repositories.ThesisRepository;
 import org.choongang.thesis.repositories.WishListRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,14 +17,13 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 
-import static org.springframework.data.domain.Sort.Order.desc;
-
 @Service
 @RequiredArgsConstructor
 public class WishListService {
 
     private final MemberUtil memberUtil;
     private final WishListRepository wishListRepository;
+    private final ThesisRepository thesisRepository;
     private final Utils utils;
 
     @PreAuthorize("isAuthenticated()")
@@ -48,15 +48,26 @@ public class WishListService {
         if (!memberUtil.isLogin()) {
             return Collections.EMPTY_LIST;
         }
+        // 1. 로그인된 사용자의 위시리스트 항목을 가져옴
         BooleanBuilder builder = new BooleanBuilder();
-        QThesis thesis = QThesis.thesis;
         QWishList wishList = QWishList.wishList;
-        builder.and(wishList.email.eq(memberUtil.getMember().getEmail()))
-                .and(thesis.deletedAt.isNull());
 
-        List<Long> items = ((List<WishList>) wishListRepository.findAll(builder, Sort.by(desc("createdAt")))).stream().map(WishList::getTid).toList();
+        // 2. 현재 사용자의 이메일로 위시리스트 항목 필터링
+        builder.and(wishList.email.eq(memberUtil.getMember().getEmail()));
 
-        return items;
+        // 3. 위시리스트에서 논문 ID 리스트 추출
+        List<Long> thesisIds = ((List<WishList>) wishListRepository.findAll(builder, Sort.by(Sort.Order.desc("createdAt"))))
+                .stream()
+                .map(WishList::getTid)
+                .toList();
+
+        // 4. 추출한 논문 ID 중에서 논문이 삭제되지 않은 (deletedAt이 null인) 논문만 필터링
+        List<Long> validThesisIds = thesisRepository.findByTidInAndDeletedAtIsNull(thesisIds)
+                .stream()
+                .map(Thesis::getTid)
+                .toList();
+
+        return validThesisIds;
     }
 
     public long getCount(Long tid) {
